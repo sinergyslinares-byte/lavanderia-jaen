@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<title>Tu Lavandería</title>
+<style>
+:root{--bg:#0a0a0f;--bg2:#13131a;--card:#1a1a24;--border:#2a2a38;--t1:#f4f4f5;--t2:#a1a1aa;--t3:#71717a;--gold:#f59e0b;--green:#10b981;--blue:#3b82f6;--red:#ef4444;--purple:#8b5cf6;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;line-height:1.5;}
+.header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.brand{font-size:18px;font-weight:700;} .brand span{color:var(--gold);}
+.badge{padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--t2);display:inline-flex;align-items:center;gap:6px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--red);}
+.dot.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+.role{padding:6px 12px;background:linear-gradient(135deg,var(--purple),#7c3aed);border-radius:20px;font-size:12px;font-weight:600;text-transform:uppercase;}
+.role.cliente{background:linear-gradient(135deg,var(--green),#059669);}
+.role.superadmin{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;}
+.container{max-width:1100px;margin:0 auto;padding:20px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;}
+.card h3{display:flex;align-items:center;gap:8px;font-size:16px;margin-bottom:14px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn:active{transform:scale(.97);} .btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#d97706);color:#000;}
+.btn-grey{background:var(--bg2);color:var(--t1);border:1px solid var(--border);}
+.btn-green{background:linear-gradient(135deg,var(--green),#059669);color:#fff;}
+.btn-red{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff;}
+.btn-purple{background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:12px;} .btn-block{width:100%;padding:14px;font-size:16px;}
+.input,.textarea,select.input{width:100%;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--t1);font-size:14px;margin-bottom:10px;}
+.input:focus,.textarea:focus,select.input:focus{outline:none;border-color:var(--gold);}
+.textarea{resize:vertical;min-height:60px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.stat b{font-size:22px;color:var(--gold);display:block;} .stat span{font-size:11px;color:var(--t2);text-transform:uppercase;}
+.tabbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;position:sticky;top:60px;z-index:50;background:var(--bg);padding:10px 0 8px;}
+.tabbtn{padding:8px 14px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--t2);font-weight:600;cursor:pointer;font-size:13px;transition:all .15s;}
+.tabbtn.active{background:var(--gold);color:#000;border-color:var(--gold);}
+.tabpane.hidden{display:none;}
+.order{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:12px;padding:16px;margin-bottom:12px;transition:all .2s;}
+.order.recogido{border-left-color:var(--gold);} .order.pesado{border-left-color:var(--green);}
+.order.entregado{border-left-color:var(--purple);opacity:.85;} .order.cancelado{border-left-color:var(--red);opacity:.7;}
+.order.age-orange{border-left-color:var(--gold);background:rgba(245,158,11,.06);}
+.order.age-red{border-left-color:var(--red);background:rgba(239,68,68,.08);}
+.ohead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.cliente-tag{padding:4px 10px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:6px;font-weight:700;color:var(--blue);font-size:13px;}
+.otime{font-size:12px;color:var(--t3);} .ageb{font-weight:700;margin-left:6px;}
+.oitems{color:var(--t2);white-space:pre-line;margin-bottom:10px;}
+.ofoot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.st{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;}
+.st.solicitado{background:rgba(59,130,246,.15);color:var(--blue);} .st.recogido{background:rgba(245,158,11,.15);color:var(--gold);}
+.st.pesado{background:rgba(16,185,129,.15);color:var(--green);} .st.entregado{background:rgba(139,92,246,.15);color:var(--purple);}
+.st.cancelado{background:rgba(239,68,68,.15);color:var(--red);}
+.alertrow{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--red);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.alertrow.ok{border-left-color:var(--green);opacity:.6;}
+.alertrow.anulada{border-left-color:var(--red);opacity:.6;background:rgba(239,68,68,.05);}
+.menu{max-width:400px;margin:60px auto;text-align:center;}
+.menu .logo{width:80px;height:80px;margin:0 auto 20px;background:linear-gradient(135deg,var(--gold),#d97706);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 20px 25px -5px rgba(0,0,0,.6);}
+.mbtn{display:flex;align-items:center;gap:14px;width:100%;padding:16px;margin-bottom:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--t1);font-size:16px;font-weight:600;cursor:pointer;text-align:left;transition:all .2s;}
+.mbtn:hover{border-color:var(--gold);transform:translateX(4px);}
+.mbtn .icon{font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border-radius:8px;}
+.permnote{font-size:12px;color:var(--t2);background:var(--bg2);border:1px dashed var(--border);border-radius:8px;padding:8px 10px;margin-bottom:12px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
+.obox{background:var(--card);border:3px solid var(--gold);border-radius:20px;padding:30px;max-width:620px;width:100%;text-align:center;max-height:90vh;overflow-y:auto;}
+.otitle{font-size:32px;font-weight:800;color:var(--gold);margin-bottom:10px;}
+.ocount{display:inline-block;padding:6px 14px;background:rgba(245,158,11,.15);color:var(--gold);border-radius:20px;font-weight:700;margin-bottom:14px;}
+.obody{text-align:left;margin:16px 0;}
+.oorder{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+.om{font-size:20px;font-weight:800;color:var(--blue);} .oi{color:var(--t2);white-space:pre-line;margin:6px 0;} .ot{font-size:12px;color:var(--t3);}
+.obtn{width:100%;padding:18px;font-size:20px;font-weight:800;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:200;}
+.modal-content{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.reconnect{position:fixed;top:0;left:0;right:0;background:var(--red);color:#fff;text-align:center;padding:8px;z-index:600;font-weight:700;}
+.syncerr{background:rgba(239,68,68,.15);border:1px solid var(--red);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:#fca5a5;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 24px;z-index:1000;opacity:0;transition:.3s;max-width:90%;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.success{border-color:var(--green);} .toast.error{border-color:var(--red);}
+.hidden{display:none!important;}
+.empty{text-align:center;padding:30px;color:var(--t3);}
+.clienthead{text-align:center;padding:20px;background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(217,119,6,.05));border:1px solid rgba(245,158,11,.2);border-radius:16px;margin-bottom:20px;}
+.clientetags{display:inline-flex;padding:10px 20px;background:linear-gradient(135deg,var(--gold),#d97706);border-radius:30px;font-weight:700;color:#000;margin-top:10px;}
+.totalcard{text-align:center;background:linear-gradient(135deg,rgba(245,158,11,.1),var(--card));border-color:rgba(245,158,11,.3);}
+.totalcard b{font-size:32px;color:var(--gold);}
+.statecard{text-align:center;border-color:rgba(16,185,129,.4);}
+.statecard b{font-size:26px;}
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-top:16px;}
+.qr-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+.qr-card canvas,.qr-card img{width:140px!important;height:140px!important;background:#fff;padding:8px;border-radius:8px;}
+.qr-card h4{margin:12px 0 4px;font-size:15px;}
+.prenda-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;}
+.prenda-row span{flex:1;font-size:13px;color:var(--t2);}
+.prenda-row input{margin:0;width:110px;}
+.prenda-line{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:13px;}
+.hora-row{display:flex;gap:8px;align-items:center;}
+.hora-row .input{margin:0;}
+.dif-badge{padding:4px 10px;border-radius:6px;background:var(--bg2);font-size:12px;color:var(--t2);}
+.fld-label{font-size:13px;color:var(--t2);margin-bottom:4px;}
+.nota-pedido{background:var(--bg2);border:1px dashed var(--border);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:var(--t2);white-space:pre-line;}
+.filtro-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+.filtro-row .input{margin:0;flex:1;min-width:120px;}
+.clilist{max-height:180px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:6px;margin-bottom:8px;}
+.clilist label{display:flex;gap:8px;align-items:center;padding:4px 2px;font-size:13px;color:var(--t2);}
+.clilist input{width:auto;margin:0;}
+.firma-canvas{width:100%;background:#fff;border-radius:8px;touch-action:none;display:block;border:1px solid var(--border);}
+.alb-datos{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;color:var(--t2);margin-bottom:12px;}
+.alb-datos b{color:var(--t1);}
+.debug-panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px;font-family:monospace;font-size:12px;max-height:200px;overflow-y:auto;}
+.debug-line{padding:2px 0;color:var(--t2);} .debug-line.error{color:var(--red);} .debug-line.success{color:var(--green);}
+@media(max-width:768px){.container{padding:12px;}.ofoot{flex-direction:column;align-items:stretch;}.ofoot .btn{width:100%;}.tabbar{top:56px;}}
+</style>
+</head>
+<body>
+<div id="reconnectBanner" class="reconnect hidden">⚠️ Sin conexión — reintentando...</div>
+<header class="header">
+<div class="brand">🧺 <span id="brandName">Tu Lavandería</span></div>
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+<span class="badge"><span class="dot" id="cDot"></span><span id="cTxt">Conectando...</span></span>
+<span class="role" id="roleBadge">-</span>
+<button class="btn btn-grey btn-sm" id="btnSalir" onclick="salir()" style="display:none;">Salir</button>
+</div>
+</header>
+<div class="container">
+<section id="menuPanel" class="hidden">
+<div class="menu">
+<div class="logo"></div>
+<h1 id="menuTitle" style="margin-bottom:8px;">Tu Lavandería</h1>
+<p style="color:var(--t2);margin-bottom:4px;">Sistema de gestión de lavandería</p>
+<p style="color:var(--t2);margin-bottom:28px;">Selecciona cómo entrar</p>
+<button class="mbtn" onclick="goView('lavanderia')"><span class="icon">🧺</span><span>Lavandería</span></button>
+<button class="mbtn" onclick="mostrarLogin()"><span class="icon">🔐</span><span>Acceso</span></button>
+<p style="margin-top:24px;font-size:13px;color:var(--t3);">💡 Los clientes entran escaneando su QR</p>
+</div>
+</section>
+<div id="loginModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 style="margin-bottom:8px;">🔐 Acceso</h3>
+<input class="input" id="loginUser" placeholder="Usuario"/>
+<input class="input" id="loginPass" type="password" placeholder="Contraseña"/>
+<div id="loginErr" style="color:var(--red);font-size:13px;margin-top:8px;min-height:20px;"></div>
+<div style="display:flex;gap:10px;margin-top:16px;">
+<button class="btn btn-grey" onclick="cerrarLogin()">Cancelar</button>
+<button class="btn btn-gold" onclick="intentarLogin()" style="flex:1;">Entrar</button>
+</div>
+</div>
+</div>
+<section id="staffShell" class="hidden">
+<div class="tabbar" id="tabBar"></div>
+<div class="tabpane hidden" id="pane-superadmin">
+<div class="card" id="cardGestionEmpresas" style="display:none;">
+<h3>🌐 Gestión de Empresas</h3>
+<div class="permnote">Crea empresas para gestionar múltiples lavanderías desde una sola plataforma. Solo visible para Superadmin.</div>
+<div id="superEmpresasList"></div>
+<div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+<input class="input" id="newEmpId" placeholder="ID único (ej: ubeda)" style="flex:1; margin:0;"/>
+<input class="input" id="newEmpNombre" placeholder="Nombre Fiscal" style="flex:2; margin:0;"/>
+<button class="btn btn-gold btn-sm" onclick="superCrearEmpresa()">➕ Crear Empresa</button>
+</div>
+</div>
+<div class="card">
+<h3>👥 Gestión de Usuarios Globales</h3>
+<div class="permnote">Crea usuarios y asígnalos a una empresa específica.</div>
+<div id="superUsuariosList"></div>
+<div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+<input class="input" id="superNewUser" placeholder="Usuario" style="flex:1; margin:0;"/>
+<input class="input" id="superNewPass" type="password" placeholder="Contraseña" style="flex:1; margin:0;"/>
+<select class="input" id="superNewRol" style="flex:1; margin:0;">
+<option value="admin">Admin</option>
+<option value="gerencia">Gerencia</option>
+<option value="lavanderia">Lavandería</option>
+<option value="superadmin">Superadmin</option>
+</select>
+<select class="input" id="superNewEmpresa" style="flex:1; margin:0;">
+<option value="jaen">jaen (por defecto)</option>
+</select>
+<button class="btn btn-gold btn-sm" onclick="superCrearUsuario()">➕ Crear Usuario</button>
+</div>
+</div>
+</div>
+<div class="tabpane hidden" id="pane-inicio">
+<div id="inicioAdminWrap">
+<div class="card"><h3>📌 Resumen</h3><div class="stats" id="resumenStats"></div></div>
+<div class="card">
+<h3>🧺 Pedido rápido</h3>
+<div class="otime" style="margin-bottom:8px;">Escribe las primeras letras del cliente, elige y crea la solicitud sin recorrer la lista.</div>
+<input class="input" id="quickFiltro" placeholder="🔍 Escribe las primeras letras del cliente…" oninput="filtrarQuickCliente(this.value)"/>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<select class="input" id="quickCliente" style="flex:2;margin:0;"></select>
+<button class="btn btn-gold" onclick="quickPedido()">🧺 Hacer pedido</button>
+</div>
+</div>
+</div>
+<div id="inicioStaffWrap" class="hidden">
+<div class="card"><h3>📌 Actividad</h3><div class="stats" id="actividadStats"></div></div>
+<div class="card"><button class="btn btn-gold btn-block" onclick="showTab('servicios')">🧺 Ir a servicios</button></div>
+</div>
+</div>
+<div class="tabpane hidden" id="pane-servicios">
+<div class="stats" id="serviciosStats"></div>
+<div class="card">
+<h3>🔍 Filtros</h3>
+<div class="filtro-row">
+<span class="fld-label" style="margin:0;">📅 Periodo:</span>
+<input class="input" type="date" id="servDesde" onchange="cambiarFiltroServicios()"/>
+<span style="color:var(--t2);">a</span>
+<input class="input" type="date" id="servHasta" onchange="cambiarFiltroServicios()"/>
+<button class="btn btn-grey btn-sm" onclick="limpiarFiltroServicios()">✕ Limpiar</button>
+</div>
+<div id="servCliBox" class="hidden">
+<button class="btn btn-grey btn-sm" id="servCliToggle" onclick="toggleServCliPanel()">🏨 Clientes: Todos</button>
+<div id="servCliPanel" class="hidden" style="margin-top:8px;">
+<input class="input" id="servCliFiltro" placeholder="🔍 Escribe 3-4 letras para buscar…" oninput="filtrarServCliTexto(this.value)"/>
+<div class="clilist" id="servCliList"></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<button class="btn btn-grey btn-sm" onclick="selServCliTodos()">✅ Todos</button>
+<button class="btn btn-grey btn-sm" onclick="limpiarSelClientes()">✕ Ninguno</button>
+</div>
+</div>
+</div>
+</div>
+<div class="card hidden" id="servResumenCard">
+<h3>📊 Resumen del filtro</h3>
+<div class="stats" id="servResumen"></div>
+</div>
+<div class="card">
+<h3> Servicios en tiempo real <button class="btn btn-grey btn-sm" style="margin-left:auto;" onclick="forceRefresh()">🔄</button></h3>
+<div class="permnote" id="permTxt"></div>
+<div id="servFiltroInfo" class="otime" style="margin-bottom:8px;"></div>
+<div id="staffServicios"><div class="empty">Esperando servicios...</div></div>
+</div>
+<div class="card">
+<h3> Diagnóstico <button class="btn btn-grey btn-sm" style="margin-left:auto;" onclick="toggleDebug()">Mostrar/Ocultar</button></h3>
+<div id="syncError" class="syncerr hidden"></div>
+<div id="syncInfo" class="otime" style="margin-bottom:10px;"></div>
+<button class="btn btn-grey btn-sm" onclick="probeSync()">📡 Probar sincronización</button>
+<div id="lastProbe" class="otime" style="margin-top:8px;"></div>
+<div class="otime" style="margin-top:8px;">Versión: LAV-JAEN-SA-2026-10-03</div>
+<div id="debugPanel" class="debug-panel hidden"><div class="debug-line">Iniciando...</div></div>
+</div>
+</div>
+<div class="tabpane hidden" id="pane-albaranes">
+<div class="card">
+<h3>📄 Albaranes</h3>
+<div class="filtro-row">
+<select class="input" id="albCliente" style="margin:0;flex:1;" onchange="renderAlbaranesAdmin()"></select>
+<select class="input" id="albPeriodo" style="margin:0;flex:1;" onchange="renderAlbaranesAdmin()"></select>
+<select class="input" id="albTipo" style="margin:0;flex:1;" onchange="renderAlbaranesAdmin()">
+<option value="todos">Todos</option>
+<option value="recogida">Recogida</option>
+<option value="entrega">Entrega</option>
+</select>
+</div>
+<div id="albaranesList"></div>
+</div>
+</div>
+<div class="tabpane hidden" id="pane-clientes">
+<div class="card">
+<h3>📦 Pedidos por cliente y periodo</h3>
+<input class="input" id="pcFiltro" placeholder=" Busca cliente (3 letras)…" oninput="filtrarPcCliente(this.value)"/>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+<select class="input" id="pcCliente" style="flex:1;margin:0;" onchange="renderPeriodosCliente()"></select>
+<select class="input" id="pcPeriodo" style="flex:1;margin:0;"></select>
+<button class="btn btn-gold" onclick="verPedidosCliente()">🔍 Ver</button>
+<button class="btn btn-grey" onclick="exportarPedidosCliente()">📥 Excel</button>
+</div>
+<div class="otime" style="margin-bottom:8px;">Elige un cliente y un periodo (mes). "Ver" muestra los pedidos con botones para actuar sobre ellos; "Excel" los exporta.</div>
+<div id="pedidosClienteResultados"></div>
+</div>
+<div class="card">
+<h3>🏨 Clientes</h3>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+<input type="file" id="importExcel" accept=".xlsx,.xls,.csv" style="flex:1;"/>
+<button class="btn btn-gold" onclick="importClientes(document.getElementById('importExcel'))">📥 Importar Excel</button>
+<button class="btn btn-grey" onclick="openClienteModal(null)">➕ Nuevo</button>
+<button class="btn btn-grey" onclick="mostrarQRClientes()"> QR clientes</button>
+</div>
+<input class="input" id="clienteFiltro" placeholder="🔍 Filtrar clientes: escribe las primeras letras del nombre…" oninput="filtrarClientesTexto(this.value)"/>
+<div class="otime" style="margin-bottom:10px;">Botón "🧺 Pedido": crea una solicitud. Botón "📱": ver el QR personal del cliente.</div>
+<div id="clientesList"></div>
+<div id="qrClientesPreview" class="hidden"></div>
+</div>
+</div>
+<div class="tabpane hidden" id="pane-contabilidad">
+<div class="card">
+<h3>📊 Contabilidad <button class="btn btn-gold btn-sm" style="margin-left:auto;" onclick="exportarExcel()">📥 Excel</button></h3>
+<div class="stats">
+<div class="stat"><b id="contDia" style="font-size:20px;">0,00 €</b><span>Hoy</span></div>
+<div class="stat"><b id="contSem" style="font-size:20px;">0,00 €</b><span>Semana</span></div>
+<div class="stat"><b id="contMes" style="font-size:20px;">0,00 €</b><span>Mes</span></div>
+<div class="stat"><b id="contTot" style="font-size:20px;">0,00 €</b><span>Total</span></div>
+</div>
+</div>
+<div class="card">
+<h3> Informe de servicios</h3>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+<input class="input" id="infFiltroCliente" placeholder=" Escribe las primeras letras del cliente…" oninput="filtrarInfCliente(this.value)" style="flex:1;margin:0;"/>
+<select class="input" id="infCliente" style="flex:1;margin:0;"></select>
+<input class="input" type="date" id="infDesde" style="flex:1;margin:0;"/>
+<input class="input" type="date" id="infHasta" style="flex:1;margin:0;"/>
+<button class="btn btn-gold" onclick="verInforme()">🔍 Ver</button>
+<button class="btn btn-grey" onclick="exportarInforme()">📥 Excel</button>
+</div>
+<div class="otime" style="margin-bottom:8px;">Elige un cliente (o todos) y un periodo opcional. "Ver" muestra en pantalla; "Excel" exporta lo filtrado.</div>
+<div id="informeResultados"></div>
+</div>
+</div>
+<div class="tabpane hidden" id="pane-facturacion">
+<div class="card">
+<h3>📄 Generar Factura PDF</h3>
+<div class="fld-label">Tipo de factura:</div>
+<select class="input" id="fmTipo" onchange="onTipoFacturaChange()" style="margin-bottom:10px;">
+<option value="FM">FM - Mensual</option>
+<option value="FQ">FQ - Quincenal</option>
+<option value="FS">FS - Semanal</option>
+</select>
+<div class="fld-label">Agrupación:</div>
+<select class="input" id="fmModo" onchange="renderAdminFM()" style="margin-bottom:10px;">
+<option value="cliente">Factura por cliente (individual)</option>
+<option value="nif">Factura agrupada por NIF/CIF</option>
+</select>
+<div id="fmNifFilterWrap" class="hidden" style="margin-bottom:10px;">
+<input class="input" id="fmFiltroNif" placeholder="🔍 Buscar NIF/CIF (solo números)..." oninput="filtrarNif(this.value)"/>
+</div>
+<div class="fld-label">Rango de fechas:</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+<div><div class="fld-label">Desde:</div><input class="input" type="date" id="fmFechaDesde" style="margin-bottom:0;"/></div>
+<div><div class="fld-label">Hasta:</div><input class="input" type="date" id="fmFechaHasta" style="margin-bottom:0;"/></div>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+<button class="btn btn-grey btn-sm" onclick="setRangoFechas(7)">📅 Últimos 7 días</button>
+<button class="btn btn-grey btn-sm" onclick="setRangoFechas(15)">📅 Últimos 15 días</button>
+<button class="btn btn-grey btn-sm" onclick="setRangoFechas('mes')">📅 Mes actual</button>
+</div>
+<div class="fld-label" id="fmClienteLabel">Cliente:</div>
+<select class="input" id="fmCliente" style="margin-bottom:10px;"></select>
+<div class="otime" id="fmIndicador" style="margin-bottom:10px;"></div>
+<button class="btn btn-gold btn-block" onclick="adminGenerarFM()">📄 Generar y descargar PDF</button>
+</div>
+<div class="card">
+<h3>➕ Factura Manual</h3>
+<div class="otime" style="margin-bottom:10px;">Abre una ventana aislada para crear facturas manualmente.</div>
+<button class="btn btn-purple btn-block" onclick="abrirFacturaManual()">➕ Abrir Factura Manual</button>
+</div>
+<div class="card">
+<h3>📋 Lista de Facturas</h3>
+<div id="facturasList" style="margin-top:12px;"></div>
+<div id="facturasAnuladasWrap" class="hidden" style="margin-top:16px;">
+<h4 style="color:var(--red);margin-bottom:8px;">🗑️ Facturas anuladas</h4>
+<div id="facturasAnuladasList"></div>
+</div>
+<button class="btn btn-grey btn-sm" id="btnVerAnuladas" onclick="toggleAnuladas()" style="margin-top:8px;display:none;">🗑️ Ver facturas anuladas</button>
+</div>
+</div>
+<div class="tabpane hidden" id="pane-ajustes">
+<div class="card">
+<h3>🏢 Datos de la empresa</h3>
+<input class="input" id="empNombre" placeholder="Nombre fiscal"/>
+<input class="input" id="empNif" placeholder="NIF/CIF"/>
+<input class="input" id="empDireccion" placeholder="Dirección"/>
+<input class="input" id="empCuenta" placeholder="Cuenta bancaria"/>
+<button class="btn btn-gold" onclick="saveEmpresa()">💾 Guardar datos</button>
+<div class="otime" style="margin-top:8px;">El nombre fiscal se muestra en toda la web y en las facturas.</div>
+</div>
+<div class="card" id="cardUsuarios">
+<h3>👥 Usuarios de acceso</h3>
+<button class="btn btn-grey btn-sm" onclick="cambiarMiPass()" style="margin-bottom:12px;">🔑 Cambiar mi contraseña</button>
+<div id="usuariosList"></div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+<input class="input" id="nuevoUsuario" placeholder="Nuevo usuario" style="flex:1;margin:0;"/>
+<input class="input" id="nuevaPass" type="password" placeholder="Contraseña" style="flex:1;margin:0;"/>
+<select class="input" id="nuevoRol" style="flex:1;margin:0;">
+<option value="gerencia">Gerencia</option>
+<option value="admin">Admin</option>
+</select>
+<button class="btn btn-gold btn-sm" onclick="crearUsuario()">➕ Crear</button>
+</div>
+<div class="otime" style="margin-top:8px;">Crea o gestiona usuarios de acceso. Solo visible para Administrador.<br/>Por defecto: <b>admin/admin123</b>, <b>gerencia/gerencia123</b> y <b>super/super123</b>.</div>
+</div>
+<div class="card">
+<h3>⚠️ Reset de datos de prueba</h3>
+<div class="otime" style="margin-bottom:10px;">Borra servicios, facturas, facturas mensuales, albaranes y contadores. <b>Conserva</b> clientes, empresa y usuarios.</div>
+<button class="btn btn-red" onclick="resetDatos()">🗑️ Borrar datos de prueba</button>
+</div>
+</div>
+</section>
+<section id="clientPanel" class="hidden">
+<div class="clienthead">
+<h2>Bienvenido</h2>
+<p id="clientSub" style="color:var(--t2);font-size:14px;">Tu Lavandería</p>
+<div class="clientetags" id="clienteTag" style="display:none;"> <span id="clienteTagText"></span></div>
+</div>
+<div class="card statecard hidden" id="clientStateCard">
+<div style="font-size:12px;color:var(--t2);text-transform:uppercase;">Estado de tu último servicio</div>
+<b id="clientStateValue"></b>
+<div id="clientStateItems" class="otime" style="margin-top:4px;"></div>
+</div>
+<div class="card totalcard" id="totalCard" style="display:none;">
+<div style="font-size:12px;color:var(--t2);text-transform:uppercase;">Total pendiente (IGIC 7% incl.)</div>
+<b id="totalValue">0,00 €</b>
+<div id="totalBreakdown" class="otime" style="margin-top:4px;"></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+<button class="btn btn-gold btn-block" onclick="abrirRecogidaModal()"> Solicitar recogida</button>
+<button class="btn btn-grey btn-block" onclick="toggleHistorial()"> Ver mis servicios</button>
+</div>
+<div class="card">
+<h3> Mis facturas</h3>
+<div id="clientFacturasList"><div class="empty">Aún no hay facturas.</div></div>
+</div>
+<div class="card">
+<h3> Mis albaranes</h3>
+<div id="clientAlbaranesList"><div class="empty">Aún no hay albaranes.</div></div>
+</div>
+<div id="cartaPanel" class="hidden">
+<div class="card">
+<h3>🧺 Mis servicios</h3>
+<div id="clientServicios"></div>
+</div>
+</div>
+<button class="btn btn-grey btn-block" onclick="cerrarSesionCliente()" style="margin-top:8px;"> Cerrar sesión de cliente</button>
+</section>
+</div>
+<div id="overlay" class="overlay hidden">
+<div class="obox" id="obox">
+<div class="otitle" id="otitle">🔔 NUEVA SOLICITUD</div>
+<div id="ocount" class="ocount hidden"></div>
+<div id="obody" class="obody"></div>
+<button class="btn btn-green obtn" onclick="cerrarOverlay()">✅ ENTERADO</button>
+</div>
+</div>
+<div id="recogidaModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 id="recTitle" style="margin-bottom:12px;">🧺 Solicitar recogida</h3>
+<div style="font-size:13px;color:var(--t2);margin-bottom:4px;">Fecha de recogida *</div>
+<input class="input" type="date" id="recFecha"/>
+<div style="font-size:13px;color:var(--t2);margin:6px 0 4px;">Franja horaria (opcional)</div>
+<div class="hora-row">
+<input class="input" type="time" id="recDesde"/>
+<span style="color:var(--t2);">a</span>
+<input class="input" type="time" id="recHasta"/>
+</div>
+<div style="font-size:13px;color:var(--t2);margin:8px 0 4px;">Peso del Cliente (kg, opcional)</div>
+<input class="input" type="number" step="0.01" min="0" id="recPesoCliente" placeholder="Peso que declaras"/>
+<div style="font-size:13px;color:var(--t2);margin:8px 0 4px;">Materiales adicionales (opcional)</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">
+<select class="input" id="recPrenda" style="flex:2;margin:0;"></select>
+<input class="input" id="recPrendaQty" type="number" min="1" value="1" style="flex:1;margin:0;"/>
+<button class="btn btn-grey" onclick="addRecPrenda()">➕</button>
+</div>
+<div id="recPrendasList" style="margin-top:8px;"></div>
+<textarea class="textarea" id="recNota" placeholder="Nota opcional (qué ropa es...)" style="margin-top:10px;"></textarea>
+<div style="display:flex;gap:10px;margin-top:12px;">
+<button class="btn btn-grey" onclick="cerrarRecogidaModal()">Cancelar</button>
+<button class="btn btn-gold" style="flex:1;" onclick="confirmarRecogida()">✅ Enviar solicitud</button>
+</div>
+</div>
+</div>
+<div id="clienteModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 id="clienteModalTitle" style="margin-bottom:12px;">Cliente</h3>
+<input type="hidden" id="clId"/>
+<input class="input" id="clNombre" placeholder="Nombre / Razón social *"/>
+<input class="input" id="clNombreComercial" placeholder="Nombre comercial"/>
+<input class="input" id="clNif" placeholder="NIF/CIF"/>
+<input class="input" id="clContacto" placeholder="Persona de contacto"/>
+<input class="input" id="clTelefono" placeholder="Teléfono"/>
+<input class="input" id="clEmail" placeholder="Email"/>
+<input class="input" id="clDireccion" placeholder="Dirección"/>
+<input class="input" id="clPrecio" type="number" step="0.01" placeholder="Precio / kg (€)"/>
+<div style="font-size:13px;color:var(--t2);margin:6px 0 4px;">💶 Precios por prenda (€/unidad)</div>
+<div id="clPreciosPrendas"></div>
+<textarea class="textarea" id="clNotas" placeholder="Notas" style="margin-top:8px;"></textarea>
+<div style="display:flex;gap:10px;margin-top:12px;">
+<button class="btn btn-grey" onclick="cerrarClienteModal()">Cancelar</button>
+<button class="btn btn-gold" style="flex:1;" onclick="saveCliente()">💾 Guardar</button>
+</div>
+</div>
+</div>
+<div id="pesarModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 style="margin-bottom:12px;" id="pesarTitle">️ Pesar servicio</h3>
+<div class="nota-pedido" id="pesarNotaPedido" style="display:none;"></div>
+<div style="font-size:13px;color:var(--t2);margin-bottom:4px;">Peso Lavandería (kg)</div>
+<input class="input" id="pesarKg" type="number" step="0.01" placeholder="Kilos lavados" oninput="updatePesarPreview()"/>
+<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0;flex-wrap:wrap;">
+<span class="otime">Peso cliente: <b id="pesarPesoCliente">—</b></span>
+<span class="dif-badge" id="pesarDif">Diferencia: —</span>
+</div>
+<div style="font-size:13px;color:var(--t2);margin:4px 0 6px;">Material opcional (prendas)</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">
+<select class="input" id="pesarPrenda" style="flex:2;margin:0;"></select>
+<input class="input" id="pesarPrendaQty" type="number" min="1" value="1" style="flex:1;margin:0;"/>
+<button class="btn btn-grey" onclick="addPrendaLine()">➕</button>
+</div>
+<div id="pesarPrendasList" style="margin-top:8px;"></div>
+<textarea class="textarea" id="pesarNota" placeholder="Nota opcional" style="margin-top:8px;"></textarea>
+<div id="pesarPreview" class="otime" style="margin-top:10px;font-weight:700;color:var(--gold);"></div>
+<div style="display:flex;gap:10px;margin-top:12px;">
+<button class="btn btn-grey" onclick="cerrarPesarModal()">Cancelar</button>
+<button class="btn btn-green" style="flex:1;" onclick="confirmarPesaje()">✅ Confirmar y facturar</button>
+</div>
+</div>
+</div>
+<div id="accionModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 id="accionTitle" style="margin-bottom:12px;">Confirmar</h3>
+<div class="nota-pedido" id="accionNota"></div>
+<div class="alb-datos" id="accionInfo"></div>
+<div style="display:flex;gap:10px;margin-top:12px;">
+<button class="btn btn-grey" onclick="cerrarAccion()">Cancelar</button>
+<button class="btn btn-gold" style="flex:1;" id="accionConfirmBtn" onclick="confirmarAccion()">✅ Confirmar</button>
+</div>
+</div>
+</div>
+<div id="albaranModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 id="albTitle" style="margin-bottom:12px;"> Albarán</h3>
+<div class="alb-datos" id="albDatos"></div>
+<div class="fld-label">🧵 Materiales (añade o quita lo que se recoge/entrega):</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+<select class="input" id="albPrenda" style="flex:2;margin:0;"></select>
+<input class="input" id="albPrendaQty" type="number" min="1" value="1" style="flex:1;margin:0;"/>
+<button class="btn btn-grey" onclick="albAddPrenda()">➕</button>
+</div>
+<div id="albPrendasList" style="margin-bottom:10px;"></div>
+<div class="fld-label">Firma del cliente (dibuja con el dedo o el ratón):</div>
+<canvas id="albFirma" class="firma-canvas" width="440" height="180"></canvas>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+<button class="btn btn-grey btn-sm" onclick="limpiarFirma()">✕ Limpiar</button>
+<button class="btn btn-grey" onclick="cerrarAlbaranModal()">Cancelar</button>
+<button class="btn btn-gold" style="flex:1;" onclick="guardarAlbaran()">💾 Guardar albarán</button>
+</div>
+</div>
+</div>
+<div id="albaranEditModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 style="margin-bottom:12px;">✏️ Editar albarán</h3>
+<input type="hidden" id="albEditId"/>
+<div class="fld-label">Kg</div>
+<input class="input" type="number" step="0.01" id="albEditKg"/>
+<div class="fld-label">Total (€)</div>
+<input class="input" type="number" step="0.01" id="albEditTotal"/>
+<div class="fld-label">Nota del cliente</div>
+<textarea class="textarea" id="albEditNota"></textarea>
+<div class="fld-label">Nota interna</div>
+<textarea class="textarea" id="albEditNotaMat"></textarea>
+<div class="fld-label">Materiales</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">
+<select class="input" id="albEditPrenda" style="flex:2;margin:0;"></select>
+<input class="input" id="albEditPrendaQty" type="number" min="1" value="1" style="flex:1;margin:0;"/>
+<button class="btn btn-grey" onclick="albEditAddPrenda()"></button>
+</div>
+<div id="albEditPrendasList" style="margin-top:8px;"></div>
+<div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+<button class="btn btn-grey btn-sm" onclick="albEditQuitarFirma()">✕ Quitar firma</button>
+<span class="otime" id="albEditFirmaEstado"></span>
+</div>
+<div style="display:flex;gap:10px;margin-top:12px;">
+<button class="btn btn-grey" onclick="cerrarAlbaranEdit()">Cancelar</button>
+<button class="btn btn-gold" style="flex:1;" onclick="guardarAlbaranEdit()"> Guardar cambios</button>
+</div>
+</div>
+</div>
+<div id="qrModal" class="modal-overlay hidden">
+<div class="modal-content" style="text-align:center;">
+<h3 id="qrModalTitle" style="margin-bottom:8px;">📱 QR del cliente</h3>
+<div id="qrModalBox" style="display:flex;justify-content:center;margin:12px 0;"></div>
+<div class="otime" id="qrModalUrl" style="word-break:break-all;"></div>
+<div style="display:flex;gap:8px;margin-top:14px;justify-content:center;">
+<button class="btn btn-grey btn-sm" onclick="copiarQRModal()">📋 Copiar</button>
+<button class="btn btn-grey" onclick="cerrarQRModal()">Cerrar</button>
+</div>
+</div>
+</div>
+<div id="tsModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 style="margin-bottom:12px;">🕒 Fechas y horas del servicio</h3>
+<input type="hidden" id="tsId"/>
+<div style="font-size:13px;color:var(--t2);margin-bottom:4px;">Solicitado</div>
+<input class="input" type="datetime-local" id="tsS"/>
+<div style="font-size:13px;color:var(--t2);margin-bottom:4px;">Recogido</div>
+<input class="input" type="datetime-local" id="tsR"/>
+<div style="font-size:13px;color:var(--t2);margin-bottom:4px;">Pesado</div>
+<input class="input" type="datetime-local" id="tsP"/>
+<div style="font-size:13px;color:var(--t2);margin-bottom:4px;">Entregado</div>
+<input class="input" type="datetime-local" id="tsE"/>
+<div style="display:flex;gap:10px;margin-top:12px;">
+<button class="btn btn-grey" onclick="cerrarTsModal()">Cancelar</button>
+<button class="btn btn-gold" style="flex:1;" onclick="saveTs()">💾 Guardar</button>
+</div>
+</div>
+</div>
+<div id="facturaEditModal" class="modal-overlay hidden">
+<div class="modal-content">
+<h3 style="margin-bottom:12px;">✏️ Editar factura</h3>
+<input type="hidden" id="facEditId"/>
+<div class="fld-label">Número</div>
+<input class="input" id="facEditNumero"/>
+<div class="fld-label">Fecha</div>
+<input class="input" type="date" id="facEditFecha"/>
+<div class="fld-label">Kg</div>
+<input class="input" type="number" step="0.01" id="facEditKg"/>
+<div class="fld-label">Total Base (€)</div>
+<input class="input" type="number" step="0.01" id="facEditTotal"/>
+<div class="fld-label">Cliente</div>
+<input class="input" id="facEditFiltroCliente" placeholder="🔍 Escribe las primeras letras del cliente…" oninput="filtrarFacEditCliente(this.value)" style="margin-bottom:6px;"/>
+<select class="input" id="facEditCliente"></select>
+<div style="display:flex;gap:10px;margin-top:12px;">
+<button class="btn btn-grey" onclick="cerrarFacturaEdit()">Cancelar</button>
+<button class="btn btn-gold" style="flex:1;" onclick="guardarFacturaEdit()">💾 Guardar</button>
+</div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+var firebaseConfig={apiKey:"AIzaSyAxQFS9IMDHmG10R7YqjGeh9Wro--Ieoys",authDomain:"lavanderia-jaen.firebaseapp.com",databaseURL:"https://lavanderia-jaen-default-rtdb.europe-west1.firebasedatabase.app",projectId:"lavanderia-jaen",storageBucket:"lavanderia-jaen.firebasestorage.app",messagingSenderId:"246419594536",appId:"1:246419594536:web:3e971d78359921a959041d"};
+var db=null,firebaseReady=false,wasDisconnected=false;
+var currentEmpresaId = 'jaen';
+var TAGLINE='Sistema de gestión de lavandería';
+var PRENDAS=['Mantas','Colchas','Edredones','Forros de Colchón','Almohadas','Forros de Sofá','Batas','Pantalón','Camisa','Gorro','Cortinas','Mantelería','Albornoz','Chaquetas','Alfombras','Plus de Transporte','Cuota de Visita','Nórdico grande','Nórdico pequeño','Edredón Grande','Manta Grande','Colcha Grande','Ropa de cama','Material toallas'];
+var empresa={nombre:'',nif:'',direccion:'',cuenta:''};
+function ref(path){return db.ref(path);}
+function debugLog(m,t){t=t||'info';console.log('['+t.toUpperCase()+'] '+m);var p=document.getElementById('debugPanel');if(p&&!p.classList.contains('hidden')){var l=document.createElement('div');l.className='debug-line '+t;l.textContent='['+new Date().toLocaleTimeString()+'] '+m;p.appendChild(l);p.scrollTop=p.scrollHeight;}}
+function toggleDebug(){var p=document.getElementById('debugPanel');if(p)p.classList.toggle('hidden');}
+var PASS_SALT='LavExpress::v2::';
+function hashPassword(pw){var enc=new TextEncoder();var data=enc.encode(PASS_SALT+String(pw));if(window.crypto&&window.crypto.subtle){return window.crypto.subtle.digest('SHA-256',data).then(function(buf){var b=new Uint8Array(buf),out='';for(var i=0;i<b.length;i++)out+=('0'+b[i].toString(16)).slice(-2);return 's256'+out;});}var h=5381;for(var j=0;j<String(pw).length;j++){h=((h<<5)+h)+String(pw).charCodeAt(j);h=h&0x7fffffff;}return Promise.resolve('h'+h.toString(36));}
+function legacyHash(pw){var h=5381;for(var i=0;i<pw.length;i++){h=((h<<5)+h)+pw.charCodeAt(i);h=h&0x7fffffff;}return'h'+h.toString(36);}
+function syncFail(msg){var b=document.getElementById('syncError');if(!b)return;b.classList.remove('hidden');b.textContent='️ Error de sincronización: '+msg;debugLog('Sync fail: '+msg,'error');}
+function clearSyncFail(){var b=document.getElementById('syncError');if(b)b.classList.add('hidden');}
+function igicOf(base){return Math.round((base||0)*0.07*100)/100;}
+function totalConIGIC(base){var b=base||0;return Math.round((b+igicOf(b))*100)/100;}
+function round2(x){return Math.round((Number(x)||0)*100)/100;}
+function pad2(n){return String(n).padStart(2,'0');}
+function localISO(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function fmtFecha(ymd){if(!ymd)return'';var p=String(ymd).split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+function fdt(ms){if(!ms)return'';var d=new Date(ms);return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());}
+function fdtShort(ms){if(!ms)return'—';var d=new Date(ms);return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(-2);}
+function toLocalInput(ms){if(!ms)return'';var d=new Date(ms);return localISO(d)+'T'+pad2(d.getHours())+':'+pad2(d.getMinutes());}
+function notaPlana(s){return (s&&s.nota)?String(s.nota).replace(/\s*\n\s*/g,' · '):'';}
+function applyBrand(){var n=empresa.nombre||'Tu Lavandería';document.title=n;var b=document.getElementById('brandName');if(b)b.textContent=n;var mt=document.getElementById('menuTitle');if(mt)mt.textContent=n;var cs=document.getElementById('clientSub');if(cs)cs.textContent=n;}
+var qrTried=false;
+function ensureQR(cb){if(typeof QRCode!=='undefined'){cb(true);return;}if(qrTried){cb(false);return;}qrTried=true;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js';s.onload=function(){cb(typeof QRCode!=='undefined');};s.onerror=function(){cb(false);};document.head.appendChild(s);}
+function initFirebase(){try{firebase.initializeApp(firebaseConfig);db=firebase.database();firebaseReady=true;db.ref('.info/connected').on('value',function(s){var c=s.val()===true;var d=document.getElementById('cDot'),t=document.getElementById('cTxt'),b=document.getElementById('reconnectBanner');if(c){d.classList.add('on');t.textContent='Conectado';b.classList.add('hidden');if(wasDisconnected){showToast('✅ Reconectado','success');wasDisconnected=false;}clearSyncFail();}else{d.classList.remove('on');t.textContent='Desconectado';b.classList.remove('hidden');wasDisconnected=true;}updateSyncInfo();});debugLog('Firebase OK','success');return true;}catch(e){debugLog('Error Firebase: '+e.message,'error');return false;}}
+var params=new URLSearchParams(location.search);var urlVista=params.get('vista')||'',urlCliente=params.get('cliente')||'';
+var KEY_ROLE='lav_role',KEY_CID='lav_client_id',KEY_CLI='lav_cliente_id';
+if(urlCliente){localStorage.setItem(KEY_CLI,urlCliente);}
+var cliGuardado=localStorage.getItem(KEY_CLI)||'';
+var role='menu';
+if(cliGuardado){role='cliente';}else if(['admin','gerencia','lavanderia','superadmin'].indexOf(urlVista)!==-1){role=urlVista;localStorage.setItem(KEY_ROLE,role);}else{var sr=localStorage.getItem(KEY_ROLE);if(sr&&['admin','gerencia','lavanderia','superadmin'].indexOf(sr)!==-1)role=sr;}
+var clientId=localStorage.getItem(KEY_CID);if(!clientId){clientId='c_'+Math.random().toString(36).slice(2)+'_'+Date.now();localStorage.setItem(KEY_CID,clientId);}
+var clienteIdFijo=cliGuardado;var clienteNombre='';var deviceId=clientId;
+var servicios=[],clientes=[],facturas=[],facturasMensuales=[],albaranes=[];var clientServicios=[];
+var overlayQueue=[],knownState={},initialLoaded=false,audioCtx=null;
+var recogidaClienteId=null;var recPrendas=[];var currentTab='inicio';
+var limitServ=20,limitFac=15,limitCli=25;
+var clienteFiltroTexto='';var quickFiltroTexto='';var pcFiltroTexto='';
+var servClientesSel=[];var servCliFiltroTexto='';
+var albCtx=null;var albPrendas=[];var qrModalUrl='';
+var albEditPrendas=[];var albEditQuitarFirmaFlag=false;var accionCtx=null;
+var fmFiltroCliente='';var infFiltroCliente='';var facEditFiltroCliente='';var fmFiltroNif='';var mostrarAnuladas=false;
+function esGerencia(){return role==='gerencia';}
+function esAdminOGerencia(){return role==='admin'||role==='gerencia';}
+function esSuperAdmin(){return role==='superadmin';}
+function puedeCambiar(d){return esAdminOGerencia()||role==='lavanderia'||esSuperAdmin();}
+function esc(v){if(v==null)return'';return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escL(v){return esc(v).replace(/\n/g,'<br>');}
+function nowLocal(){return Date.now();}
+function newId(){return db.ref().push().key;}
+function ftime(t){try{return new Date(t).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
+function fp(v){return(Number(v)||0).toFixed(2).replace('.',',')+' €';}
+function requireFB(){if(!firebaseReady||!db){showToast('⚠️ Firebase no listo','error');return false;}return true;}
+function stLabel(e){var m={SOLICITADO:'📥 Solicitado',RECOGIDO:' Recogido',PESADO:'️ Pesado',ENTREGADO:'📦 Entregado',CANCELADO:'❌ Cancelado'};return m[e]||e;}
+function stLabelPlain(e){var m={SOLICITADO:'Solicitado',RECOGIDO:'Recogido',PESADO:'Pesado',ENTREGADO:'Entregado',CANCELADO:'Cancelado'};return m[e]||e;}
+function stClass(e){var m={SOLICITADO:'solicitado',RECOGIDO:'recogido',PESADO:'pesado',ENTREGADO:'entregado',CANCELADO:'cancelado'};return m[e]||'solicitado';}
+function clientById(id){for(var i=0;i<clientes.length;i++)if(clientes[i].id===id)return clientes[i];return null;}
+function servicioPorId(id){for(var i=0;i<servicios.length;i++)if(servicios[i].id===id)return servicios[i];return null;}
+function facturaPorNumero(num){for(var i=0;i<facturas.length;i++)if(facturas[i].numero===num)return facturas[i];return null;}
+function facturaPorId(id){for(var i=0;i<facturas.length;i++)if(facturas[i].id===id)return facturas[i];return null;}
+function facturaMensualDe(clienteId,periodoKey){for(var i=0;i<facturasMensuales.length;i++){if(facturasMensuales[i].clientId===clienteId&&facturasMensuales[i].periodoKey===periodoKey)return facturasMensuales[i].numero;}return null;}
+function albaranPorId(id){for(var i=0;i<albaranes.length;i++)if(albaranes[i].id===id)return albaranes[i];return null;}
+function albaranesDeServicio(sid){return albaranes.filter(function(a){return a.servicioId===sid;});}
+function isStaff(){return role==='lavanderia'||esAdminOGerencia()||esSuperAdmin();}
+function showToast(m,t){var e=document.getElementById('toast');e.textContent=m;e.className='toast show '+(t||'');setTimeout(function(){e.className='toast';},3000);}
+function ymOf(ts){var d=new Date(ts);return d.getFullYear()+'-'+pad2(d.getMonth()+1);}
+function monthLabel(ym){var p=ym.split('-');var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];return meses[parseInt(p[1],10)-1]+' '+p[0];}
+function updateSyncInfo(){var e=document.getElementById('syncInfo');if(!e)return;var conn=document.getElementById('cTxt');e.textContent='Rol: '+role+' · Dispositivo: '+deviceId.slice(0,8)+' · Conexión: '+(conn?conn.textContent:'?')+' · Versión LAV-JAEN-SA';}
+function probeSync(){if(!requireFB())return;db.ref('syncProbe/'+deviceId).set({t:Date.now(),role:role}).then(function(){showToast('📡 Sonda enviada','success');}).catch(function(e){syncFail(e.message);});}
+function listenProbe(){if(!requireFB())return;db.ref('syncProbe').on('value',function(s){var d=s.val()||{};var best=null,bestDev=null;Object.keys(d).forEach(function(k){var v=d[k];if(v&&v.t&&(!best||v.t>best)){best=v.t;bestDev=k;}});var e=document.getElementById('lastProbe');if(!e)return;if(!best){e.textContent='Sin sondas todavía.';return;}var mine=(bestDev===deviceId);e.textContent='Última sonda: '+ftime(best)+' · rol '+(d[bestDev].role||'?')+' · '+(mine?'ESTE dispositivo':'OTRO dispositivo ✅');},function(err){syncFail(err.message);});}
+function beep(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();var n=audioCtx.currentTime;[0,.22,.44].forEach(function(t){var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=880;g.gain.setValueAtTime(.0001,n+t);g.gain.exponentialRampToValueAtTime(.5,n+t+.02);g.gain.exponentialRampToValueAtTime(.0001,n+t+.18);o.connect(g);g.connect(audioCtx.destination);o.start(n+t);o.stop(n+t+.2);});}catch(e){}}
+function vibrar(){try{if(navigator.vibrate)navigator.vibrate([300,100,300,100,300]);}catch(e){}}
+document.addEventListener('pointerdown',function(){if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();},{once:true});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();}});
+function nextNumeroFactura(tipo, periodoKey, cb){
+if(typeof tipo==='function'){cb=tipo;tipo='FM';periodoKey=ymOf(Date.now());}
+if(!periodoKey) periodoKey=ymOf(Date.now());
+if(!tipo) tipo='FM';
+var key='config/contadorFactura'+tipo;
+db.ref(key).transaction(function(cur){return(cur||0)+1;},function(err,committed,snap){
+if(err||!committed){showToast('❌ Error al numerar factura','error');return;}
+var n=snap.val();
+cb(tipo+'-'+periodoKey+'-'+String(n).padStart(4,'0'));
+});
+}
+function diferenciaLine(s){if(s.pesoCliente==null)return'';var dv=(s.kg!=null?Math.round((s.kg-s.pesoCliente)*100)/100:null);return '<div class="otime" style="margin-top:4px;">⚖️ Peso cliente '+s.pesoCliente+' kg'+(s.kg!=null?' · Lavandería '+s.kg+' kg':'')+(dv!=null?' · <span style="font-weight:700;color:'+(dv!==0?'var(--red)':'var(--green)')+';">Dif. '+dv+' kg</span>':'')+'</div>';}
+function buildTabBar(){var bar=document.getElementById('tabBar');if(!bar)return;bar.innerHTML='';var tabs;
+if(esSuperAdmin()){tabs=['superadmin','inicio','servicios','clientes','ajustes'];}
+else if(role==='admin'){tabs=['inicio','servicios','albaranes','clientes','contabilidad','facturacion','ajustes'];}
+else if(role==='gerencia'){tabs=['inicio','servicios','clientes','contabilidad','ajustes'];}
+else{tabs=['inicio','servicios'];}
+var labels={superadmin:'🌐 Superadmin',inicio:'🏠 Inicio',servicios:'🧺 Servicios',albaranes:'📄 Albaranes',clientes:'🏨 Clientes',contabilidad:'📊 Contabilidad',facturacion:'📄 Facturación',ajustes:'️ Ajustes'};
+tabs.forEach(function(t){var b=document.createElement('button');b.className='tabbtn'+(t===currentTab?' active':'');b.textContent=labels[t];b.onclick=function(){showTab(t);};bar.appendChild(b);});}
+function showTab(t){currentTab=t;
+['superadmin','inicio','servicios','albaranes','clientes','contabilidad','facturacion','ajustes'].forEach(function(p){var el=document.getElementById('pane-'+p);if(el)el.classList.toggle('hidden',p!==t);});
+var ia=document.getElementById('inicioAdminWrap');var isf=document.getElementById('inicioStaffWrap');
+if(t==='inicio'){if(esAdminOGerencia()||esSuperAdmin()){ia.classList.remove('hidden');isf.classList.add('hidden');}else{ia.classList.add('hidden');isf.classList.remove('hidden');}}
+buildTabBar();
+if(t==='facturacion' && role==='admin'){renderFacturas();onTipoFacturaChange();}
+if(t==='superadmin'){
+superRenderEmpresas();superRenderUsuarios();
+var cardEmp=document.getElementById('cardGestionEmpresas');
+if(cardEmp){cardEmp.style.display=esSuperAdmin()?'block':'none';}
+}
+}
+function quickPedido(){var sel=document.getElementById('quickCliente');var cid=sel?sel.value:'';if(!cid){showToast('⚠️ Elige un cliente','error');return;}abrirRecogidaModal(cid);}
+function showOverlay(){if(!overlayQueue.length)return;document.getElementById('otitle').textContent=overlayQueue.length>1?' AVISOS':'🔔 NUEVA SOLICITUD';document.getElementById('obody').innerHTML=overlayQueue.map(function(i){return'<div class="oorder"><div class="om">🏨 '+esc(i.servicio.clienteNombre||'S/C')+'</div><div class="oi">'+escL(i.servicio.nota||'Sin nota')+'</div><div class="ot">'+(i.servicio.fechaRecogida?(' '+fmtFecha(i.servicio.fechaRecogida)+(i.servicio.franjaDesde?' '+i.servicio.franjaDesde+'–'+(i.servicio.franjaHasta||''):'')):ftime(i.servicio.createdAtLocal))+'</div></div>';}).join('');var c=document.getElementById('ocount');if(overlayQueue.length>1){c.textContent=overlayQueue.length+' avisos';c.classList.remove('hidden');}else c.classList.add('hidden');document.getElementById('overlay').classList.remove('hidden');beep();vibrar();}
+function cerrarOverlay(){overlayQueue=[];document.getElementById('overlay').classList.add('hidden');try{if(navigator.vibrate)navigator.vibrate(0);}catch(e){}}
+function detectChanges(){if(!isStaff())return;servicios.forEach(function(s){var prev=knownState[s.id];if(prev===undefined){if(initialLoaded)overlayQueue.push({tipo:'NUEVO',servicio:s});knownState[s.id]=s.estado;}else if(prev!==s.estado){knownState[s.id]=s.estado;}});var idsActuales={};servicios.forEach(function(s){idsActuales[s.id]=1;});Object.keys(knownState).forEach(function(k){if(!idsActuales[k])delete knownState[k];});initialLoaded=true;if(overlayQueue.length)showOverlay();}
+function goView(v){location.href=location.pathname+'?vista='+v;}
+function salir(){if(role==='cliente'){return;}sessionStorage.removeItem('lav_auth');sessionStorage.removeItem('lav_user');localStorage.removeItem(KEY_ROLE);location.href=location.pathname;}
+function cerrarSesionCliente(){localStorage.removeItem(KEY_CLI);localStorage.removeItem(KEY_ROLE);location.href=location.pathname;}
+function toggleHistorial(){var p=document.getElementById('cartaPanel');if(p)p.classList.toggle('hidden');}
+function mostrarLogin(){document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';document.getElementById('loginErr').textContent='';document.getElementById('loginModal').classList.remove('hidden');document.getElementById('loginUser').focus();}
+function cerrarLogin(){document.getElementById('loginModal').classList.add('hidden');}
+function inicializarUsuarios(cb){Promise.all([hashPassword('admin123'),hashPassword('gerencia123'),hashPassword('super123')]).then(function(hs){var updates={};updates['admin']={passwordHash:hs[0],rol:'admin',empresaId:'jaen'};updates['gerencia']={passwordHash:hs[1],rol:'gerencia',empresaId:'jaen'};updates['super']={passwordHash:hs[2],rol:'superadmin',empresaId:'all'};db.ref('config/usuarios').update(updates).then(function(){if(cb)cb();});});}
+function intentarLogin(){var u=document.getElementById('loginUser').value.trim().toLowerCase();var p=document.getElementById('loginPass').value.trim();var e=document.getElementById('loginErr');if(!u||!p){e.textContent='Introduce usuario y contraseña.';return;}if(!requireFB())return;db.ref('config/usuarios').once('value').then(function(s){var usuarios=s.val();if(!usuarios||Object.keys(usuarios).length===0){inicializarUsuarios(function(){db.ref('config/usuarios/'+u).once('value').then(function(su){var user=su.val();if(!user){e.textContent='Usuario no encontrado.';return;}verificarYEntrar(u,p,user,e);});});return;}var user=usuarios[u];if(!user){e.textContent='Usuario no encontrado.';return;}verificarYEntrar(u,p,user,e);});}
+function verificarYEntrar(u,p,user,e){hashPassword(p).then(function(hash){if(hash===user.passwordHash){loginExito(u,user);return;}var legacy=legacyHash(p);if(user.passwordHash===legacy){db.ref('config/usuarios/'+u).update({passwordHash:hash}).then(function(){showToast('🔑 Contraseña migrada','success');loginExito(u,user);});return;}e.textContent='Contraseña incorrecta.';});}
+function loginExito(username,user){var rol=user.rol;sessionStorage.setItem('lav_auth',rol);sessionStorage.setItem('lav_user',username);localStorage.setItem(KEY_ROLE,rol);cerrarLogin();location.href=location.pathname+'?vista='+rol;}
+function renderUsuariosList(usuarios){var b=document.getElementById('usuariosList');if(!b)return;usuarios=usuarios||{};var keys=Object.keys(usuarios);
+if(!esSuperAdmin()){keys=keys.filter(function(k){return usuarios[k].empresaId===currentEmpresaId||!usuarios[k].empresaId;});}
+var adminCount=keys.filter(function(k){return usuarios[k].rol==='admin';}).length;if(!keys.length){b.innerHTML='<div class="empty">No hay usuarios en esta empresa.</div>';return;}b.innerHTML=keys.map(function(k){var u=usuarios[k];var rolLabel=u.rol==='admin'?' Admin':(u.rol==='superadmin'?'🌐 Superadmin':'💼 Gerencia');var esUltimoAdmin=(u.rol==='admin'&&adminCount<=1);var deleteBtn=esUltimoAdmin?'':'<button class="btn btn-red btn-sm" onclick="borrarUsuario(\''+esc(k)+'\')">🗑️</button>';return '<div class="alertrow" style="border-left-color:var(--blue);flex-wrap:wrap;"><div style="flex:1;"><b>'+esc(k)+'</b> <span class="otime">· '+rolLabel+' · Empresa: '+(u.empresaId||'N/A')+'</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-grey btn-sm" onclick="cambiarPassUsuario(\''+esc(k)+'\')"> Contraseña</button>'+deleteBtn+'</div></div>';}).join('');}
+function crearUsuario(){if(!requireFB())return;var u=document.getElementById('nuevoUsuario').value.trim().toLowerCase();var p=document.getElementById('nuevaPass').value;var r=document.getElementById('nuevoRol').value;if(!u||!p){showToast('⚠️ Usuario y contraseña obligatorios','error');return;}if(!/^[a-z0-9_]+$/.test(u)){showToast('️ Usuario: solo letras/números, sin espacios','error');return;}if(p.length<4){showToast('⚠️ Contraseña mín 4 caracteres','error');return;}
+var empresaAsignada=currentEmpresaId;
+db.ref('config/usuarios/'+u).once('value').then(function(s){if(s.val()){showToast('⚠️ Ese usuario ya existe','error');return;}hashPassword(p).then(function(hash){db.ref('config/usuarios/'+u).set({passwordHash:hash,rol:r,empresaId:empresaAsignada}).then(function(){showToast('✅ Usuario creado en empresa: '+empresaAsignada,'success');document.getElementById('nuevoUsuario').value='';document.getElementById('nuevaPass').value='';});});});}
+function cambiarPassUsuario(k){if(!requireFB())return;var n=prompt('Nueva contraseña para "'+k+'" (mín 4):');if(!n)return;if(n.length<4){showToast('⚠️ Contraseña muy corta','error');return;}hashPassword(n).then(function(hash){db.ref('config/usuarios/'+k).update({passwordHash:hash}).then(function(){showToast('✅ Contraseña actualizada','success');});});}
+function borrarUsuario(k){if(!requireFB())return;if(!confirm('¿Borrar el usuario "'+k+'"?'))return;db.ref('config/usuarios/'+k).remove().then(function(){showToast('✅ Usuario borrado','success');});}
+function cambiarMiPass(){if(!requireFB())return;var username=sessionStorage.getItem('lav_user');if(!username){showToast('⚠️ No se pudo identificar el usuario actual','error');return;}var actual=prompt('Contraseña actual:');if(actual===null)return;db.ref('config/usuarios/'+username).once('value').then(function(s){var user=s.val();if(!user){showToast('❌ Usuario no encontrado','error');return;}hashPassword(actual).then(function(hashActual){var ok=(hashActual===user.passwordHash)||(legacyHash(actual)===user.passwordHash);if(!ok){showToast('❌ Contraseña actual incorrecta','error');return;}var nueva=prompt('Nueva contraseña (mín 4):');if(nueva===null)return;if(nueva.length<4){showToast('⚠️ Contraseña muy corta','error');return;}hashPassword(nueva).then(function(hashNueva){db.ref('config/usuarios/'+username).update({passwordHash:hashNueva}).then(function(){showToast('✅ Contraseña actualizada','success');});});});});}
+function renderEmpresa(){var a=document.getElementById('empNombre');if(!a)return;a.value=empresa.nombre||'';document.getElementById('empNif').value=empresa.nif||'';document.getElementById('empDireccion').value=empresa.direccion||'';document.getElementById('empCuenta').value=empresa.cuenta||'';applyBrand();}
+function saveEmpresa(){if(!requireFB())return;var data={nombre:document.getElementById('empNombre').value.trim(),nif:document.getElementById('empNif').value.trim(),direccion:document.getElementById('empDireccion').value.trim(),cuenta:document.getElementById('empCuenta').value.trim()};db.ref('config/empresa').set(data).then(function(){showToast('✅ Datos de empresa guardados','success');applyBrand();});}
+function renderResumen(){var box=document.getElementById('resumenStats');if(!box)return;var now=new Date();var ym=now.getFullYear()+'-'+pad2(now.getMonth()+1);var yr=String(now.getFullYear());var activos=clientes.filter(function(c){return c.activo!==false;}).length;var kgMes=0,kgYear=0;servicios.forEach(function(s){if(['PESADO','ENTREGADO'].indexOf(s.estado)!==-1&&s.tsPesado){var d=new Date(s.tsPesado);var sym=d.getFullYear()+'-'+pad2(d.getMonth()+1);var sy=String(d.getFullYear());var k=Number(s.kg)||0;if(sym===ym)kgMes+=k;if(sy===yr)kgYear+=k;}});if(esGerencia()){box.innerHTML='<div class="stat"><b>'+activos+'</b><span>Clientes activos</span></div><div class="stat"><b>'+kgMes.toFixed(1)+' kg</b><span>Kilos mes</span></div><div class="stat"><b>'+kgYear.toFixed(1)+' kg</b><span>Kilos año</span></div>';}else{var facMes=0,facYear=0;facturas.forEach(function(f){if(f.estado==='ANULADA')return;var t=Number(f.total)||0;var fd=f.fecha||'';if(fd.indexOf(ym)===0)facMes+=t;if(fd.indexOf(yr)===0)facYear+=t;});box.innerHTML='<div class="stat"><b>'+activos+'</b><span>Clientes activos</span></div><div class="stat"><b>'+fp(facMes)+'</b><span>Facturado mes</span></div><div class="stat"><b>'+kgMes.toFixed(1)+' kg</b><span>Kilos mes</span></div><div class="stat"><b>'+kgYear.toFixed(1)+' kg</b><span>Kilos año</span></div><div class="stat"><b>'+fp(facYear)+'</b><span>Facturado año</span></div>';}}
+function renderActividad(){var box=document.getElementById('actividadStats');if(!box)return;var sol=servicios.filter(function(s){return s.estado==='SOLICITADO';}).length;var rec=servicios.filter(function(s){return s.estado==='RECOGIDO';}).length;var pes=servicios.filter(function(s){return s.estado==='PESADO';}).length;var ent=servicios.filter(function(s){return s.estado==='ENTREGADO';}).length;box.innerHTML='<div class="stat"><b>'+sol+'</b><span>Solicitudes</span></div><div class="stat"><b>'+rec+'</b><span>Recogidos</span></div><div class="stat"><b>'+pes+'</b><span>Pesados</span></div><div class="stat"><b>'+ent+'</b><span>Entregados</span></div>';}
+function renderServiciosStats(){var box=document.getElementById('serviciosStats');if(!box)return;var sol=servicios.filter(function(s){return s.estado==='SOLICITADO';}).length;var rec=servicios.filter(function(s){return s.estado==='RECOGIDO';}).length;var pes=servicios.filter(function(s){return s.estado==='PESADO';}).length;var ent=servicios.filter(function(s){return s.estado==='ENTREGADO';}).length;box.innerHTML='<div class="stat"><b>'+sol+'</b><span>Solicitudes</span></div><div class="stat"><b>'+rec+'</b><span>Recogidos</span></div><div class="stat"><b>'+pes+'</b><span>Pesados</span></div><div class="stat"><b>'+ent+'</b><span>Entregados</span></div>';}
+function renderQuickClientes(){var s=document.getElementById('quickCliente');if(!s)return;var q=norm(quickFiltroTexto);var list=clientes.slice();if(q){list=list.filter(function(c){var hay=norm(c.nombre||'')+' '+norm(c.nombreComercial||'');return hay.indexOf(q)!==-1;});}var cur=s.value;if(q){if(!list.length){s.innerHTML='<option value="">— Sin coincidencias —</option>';return;}s.innerHTML=list.map(function(c){return '<option value="'+c.id+'">'+esc(c.nombreComercial||c.nombre||'')+'</option>';}).join('');if(cur&&list.some(function(c){return c.id===cur;}))s.value=cur;else s.value=list[0].id;}else{s.innerHTML='<option value="">— Elegir cliente —</option>'+list.map(function(c){return '<option value="'+c.id+'">'+esc(c.nombreComercial||c.nombre||'')+'</option>';}).join('');if(cur&&list.some(function(c){return c.id===cur;}))s.value=cur;}}
+function filtrarQuickCliente(v){quickFiltroTexto=(v||'').trim();renderQuickClientes();}
+function resetDatos(){if(!requireFB())return;if(!confirm('⚠️ Esto borrará servicios, facturas, facturas mensuales, albaranes y contadores.\nLos clientes, la empresa y los usuarios se CONSERVAN.\n¿Continuar?'))return;var tec=prompt('Escribe BORRAR para confirmar el reset:');if(tec!=='BORRAR'){showToast('❌ Reset cancelado','error');return;}var ops=['servicios','facturas','facturasMensuales','albaranes','syncProbe'].map(function(r){return db.ref(r).remove();});ops.push(db.ref('config/contadorFactura').remove());ops.push(db.ref('config/contadorFacturaMensual').remove());ops.push(db.ref('config/contadorFacturaFM').remove());ops.push(db.ref('config/contadorFacturaFQ').remove());ops.push(db.ref('config/contadorFacturaFS').remove());Promise.all(ops).then(function(){knownState={};initialLoaded=false;showToast('✅ Datos de prueba borrados','success');renderAll();}).catch(function(e){showToast('❌ Error en reset: '+e.message,'error');});}
+function resolveClient(){if(!clienteIdFijo)return;var c=clientById(clienteIdFijo);if(!c)return;clienteNombre=c.nombreComercial||c.nombre||'';var tag=document.getElementById('clienteTag'),txt=document.getElementById('clienteTagText');if(tag&&txt){tag.style.display='inline-flex';txt.textContent=clienteNombre;}}
+function applyRole(){var mp=document.getElementById('menuPanel'),shell=document.getElementById('staffShell'),cp=document.getElementById('clientPanel'),bs=document.getElementById('btnSalir'),rb=document.getElementById('roleBadge');mp.classList.add('hidden');shell.classList.add('hidden');cp.classList.add('hidden');bs.style.display='none';rb.textContent=role==='menu'?'-':role.toUpperCase();rb.className='role'+(role==='cliente'?' cliente':'')+(esSuperAdmin()?' superadmin':'');if(role==='menu'){mp.classList.remove('hidden');return;}if(role==='cliente'){cp.classList.remove('hidden');bs.style.display='none';return;}if((role==='admin'||role==='gerencia'||role==='superadmin')&&sessionStorage.getItem('lav_auth')!==role){mostrarLogin();return;}bs.style.display='inline-flex';shell.classList.remove('hidden');var cardUsuarios=document.getElementById('cardUsuarios');if(cardUsuarios){if(role==='admin'||esSuperAdmin()){cardUsuarios.classList.remove('hidden');}else{cardUsuarios.classList.add('hidden');}}var cliBox=document.getElementById('servCliBox');var resCard=document.getElementById('servResumenCard');if(cliBox){if(role==='admin'||esSuperAdmin()){cliBox.classList.remove('hidden');}else{cliBox.classList.add('hidden');}}if(resCard){if(role==='admin'||esSuperAdmin()){resCard.classList.remove('hidden');}else{resCard.classList.add('hidden');}}buildTabBar();showTab('inicio');if(isStaff())renderServCliList();updateSyncInfo();}
+function renderAll(){if(isStaff()){detectChanges();renderStaffServicios();renderServiciosStats();}if(role==='admin'||esSuperAdmin()){renderResumen();renderQuickClientes();renderContab();renderClientes();renderAdminFM();renderEmpresa();renderInformeClientes();renderPedidosClienteSelect();renderAlbaranesAdmin();}if(role==='gerencia'){renderResumen();renderQuickClientes();renderClientes();renderEmpresa();}if(role==='lavanderia'){renderActividad();}if(role==='cliente'){resolveClient();renderClientState();renderClientServicios();renderTotal();renderClientFacturas();renderClientAlbaranes();}updateSyncInfo();}
+function verMasServ(){limitServ+=20;renderStaffServicios();}
+function botonesPara(s){var b='';if(s.estado==='SOLICITADO'&&puedeCambiar('RECOGIDO'))b+='<button class="btn btn-gold btn-sm" onclick="pedirAccion(\''+s.id+'\',\'RECOGIDO\')">🚚 Recoger</button>';if(s.estado==='RECOGIDO'&&puedeCambiar('PESADO'))b+='<button class="btn btn-green btn-sm" onclick="abrirPesarModal(\''+s.id+'\')">⚖️ Pesar</button>';if(s.estado==='PESADO'&&puedeCambiar('ENTREGADO'))b+='<button class="btn btn-purple btn-sm" onclick="pedirAccion(\''+s.id+'\',\'ENTREGADO\')">📦 Entregar</button>';if(s.estado==='SOLICITADO'&&puedeCambiar('CANCELADO'))b+='<button class="btn btn-red btn-sm" onclick="cambiarEstado(\''+s.id+'\',\'CANCELADO\')">❌</button>';if(b==='')b='<span class="otime"> Sin acciones</span>';return b;}
+function lineaRecogida(s){if(!s.fechaRecogida)return'';return '<div class="otime" style="margin-top:4px;">📅 Recoger: '+fmtFecha(s.fechaRecogida)+(s.franjaDesde?' · '+s.franjaDesde+'–'+(s.franjaHasta||''):'')+'</div>';}
+function leerFiltroServicios(){var d=document.getElementById('servDesde');var h=document.getElementById('servHasta');return {desde:(d?d.value:''),hasta:(h?h.value:'')};}
+function filtrarServiciosLista(){var f=leerFiltroServicios();var list=servicios.slice();if(f.desde){var dms=new Date(f.desde+'T00:00:00').getTime();list=list.filter(function(s){return (s.createdAtLocal||0)>=dms;});}if(f.hasta){var hms=new Date(f.hasta+'T23:59:59').getTime();list=list.filter(function(s){return (s.createdAtLocal||0)<=hms;});}if(servClientesSel.length){list=list.filter(function(s){return servClientesSel.indexOf(s.clienteId)!==-1;});}list.sort(function(a,b){return(b.createdAtLocal||0)-(a.createdAtLocal||0);});return list;}
+function cambiarFiltroServicios(){limitServ=20;renderStaffServicios();}
+function limpiarFiltroServicios(){var d=document.getElementById('servDesde');var h=document.getElementById('servHasta');if(d)d.value='';if(h)h.value='';limitServ=20;renderStaffServicios();}
+function toggleServCliPanel(){var p=document.getElementById('servCliPanel');if(p)p.classList.toggle('hidden');}
+function renderServCliList(){var box=document.getElementById('servCliList');if(!box)return;var q=norm(servCliFiltroTexto);var list=clientes.slice().sort(function(a,b){return String(a.nombre||'').localeCompare(String(b.nombre||''));});if(q){list=list.filter(function(c){var hay=norm(c.nombre||'')+' '+norm(c.nombreComercial||'');return hay.indexOf(q)!==-1;});}if(!list.length){box.innerHTML='<div class="empty" style="padding:10px;">Sin coincidencias.</div>';}else{box.innerHTML=list.map(function(c){var act=servClientesSel.indexOf(c.id)!==-1;return '<label><input type="checkbox" '+(act?'checked':'')+' onchange="toggleServCliente(\''+c.id+'\')"/>'+esc(c.nombreComercial||c.nombre||'')+'</label>';}).join('');}updateServCliToggle();}
+function updateServCliToggle(){var b=document.getElementById('servCliToggle');if(!b)return;b.textContent=servClientesSel.length?('🏨 Clientes: '+servClientesSel.length+' seleccionado(s)'):'🏨 Clientes: Todos';}
+function filtrarServCliTexto(v){servCliFiltroTexto=(v||'').trim();renderServCliList();}
+function toggleServCliente(id){var i=servClientesSel.indexOf(id);if(i===-1)servClientesSel.push(id);else servClientesSel.splice(i,1);renderServCliList();renderStaffServicios();}
+function selServCliTodos(){servClientesSel=clientes.map(function(c){return c.id;});renderServCliList();renderStaffServicios();}
+function limpiarSelClientes(){servClientesSel=[];renderServCliList();renderStaffServicios();}
+function renderServResumen(){var box=document.getElementById('servResumen');if(!box)return;if(role!=='admin'&&!esSuperAdmin())return;var list=filtrarServiciosLista();var pedidos=list.length,pesados=0,kg=0,basePeso=0,mat=0,baseTotal=0;list.forEach(function(s){var weighed=['PESADO','ENTREGADO'].indexOf(s.estado)!==-1;if(weighed){pesados++;kg+=Number(s.kg)||0;var t=Number(s.total)||0;var im=Number(s.importeMaterial)||0;baseTotal+=t;mat+=im;basePeso+=(t-im);}});var igic=igicOf(baseTotal);var totIgic=totalConIGIC(baseTotal);box.innerHTML='<div class="stat"><b>'+pedidos+'</b><span>Pedidos</span></div><div class="stat"><b>'+pesados+'</b><span>Pesados</span></div><div class="stat"><b>'+kg.toFixed(1)+' kg</b><span>Kg totales</span></div><div class="stat"><b>'+fp(basePeso)+'</b><span>Base peso</span></div><div class="stat"><b>'+fp(mat)+'</b><span>Materiales</span></div><div class="stat"><b>'+fp(baseTotal)+'</b><span>Base total</span></div><div class="stat"><b>'+fp(igic)+'</b><span>IGIC 7%</span></div><div class="stat"><b>'+fp(totIgic)+'</b><span>Total c/IGIC</span></div>';}
+function renderStaffServicios(){var box=document.getElementById('staffServicios');if(!box)return;renderServResumen();var f=leerFiltroServicios();var list=filtrarServiciosLista();var info=document.getElementById('servFiltroInfo');if(info){var parts=[];if(f.desde||f.hasta)parts.push('📅 '+(f.desde?fmtFecha(f.desde):'…')+' → '+(f.hasta?fmtFecha(f.hasta):'…'));if(servClientesSel.length)parts.push('🏨 '+servClientesSel.length+' cliente(s)');if(parts.length){info.textContent='Filtro activo: '+parts.join(' · ')+' · '+list.length+' pedido(s)';}else{info.textContent=servicios.length+' pedido(s) en total';}}if(!list.length){box.innerHTML='<div class="empty">'+((f.desde||f.hasta||servClientesSel.length)?'No hay pedidos con ese filtro.':'Esperando servicios...')+'</div>';return;}var shown=list.slice(0,limitServ);var html=shown.map(function(s){var cls=stClass(s.estado),badge='';if(['CANCELADO'].indexOf(s.estado)===-1&&s.createdAtLocal){var m=Math.floor((Date.now()-s.createdAtLocal)/60000);if(m>=60){cls+=' age-red';badge='<span class="ageb" style="color:var(--red)"> '+m+' min</span>';}else if(m>=30){cls+=' age-orange';badge='<span class="ageb" style="color:var(--gold)">🟠 '+m+' min</span>';}}var infoS=(s.kg?'️ '+s.kg+' kg':'')+(s.importeMaterial?' · 🧵 +'+fp(s.importeMaterial):'')+(s.total?' · '+fp(s.total):'')+(s.facturaId?' · 🧾 '+esc(s.facturaId):'');var prendasTxt=(s.prendas&&s.prendas.length)?('<div class="otime" style="margin-top:4px;">🧵 '+esc(s.prendas.map(function(p){return p.qty+'×'+p.tipo;}).join(', '))+'</div>'):'';var albs=albaranesDeServicio(s.id);var albBtns=albs.length?('<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">'+albs.map(function(a){return '<button class="btn btn-grey btn-sm" onclick="descargarAlbaranPDF(\''+a.id+'\')">'+(a.tipo==='recogida'?' Alb. Recogida':'📄 Alb. Entrega')+'</button>'+(role==='admin'?'<button class="btn btn-grey btn-sm" onclick="abrirAlbaranEdit(\''+a.id+'\')">✏️</button><button class="btn btn-red btn-sm" onclick="borrarAlbaran(\''+a.id+'\')">🗑️</button>':'');}).join('')+'</div>'):'';var tsParts=[];if(s.tsSolicitado)tsParts.push('Sol. '+fdt(s.tsSolicitado));if(s.tsRecogido)tsParts.push('Rec. '+fdt(s.tsRecogido));if(s.tsPesado)tsParts.push('Pes. '+fdt(s.tsPesado));if(s.tsEntregado)tsParts.push('Ent. '+fdt(s.tsEntregado));var tsLine=tsParts.length?('<div class="otime" style="margin-top:4px;">🕒 '+tsParts.join(' · ')+'</div>'):'';var extra='';if(['RECOGIDO','PESADO','ENTREGADO'].indexOf(s.estado)!==-1){var weighed=['PESADO','ENTREGADO'].indexOf(s.estado)!==-1;extra='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">'+(esAdminOGerencia()?'<button class="btn btn-grey btn-sm" onclick="retrocederEstado(\''+s.id+'\')">↩️ Anterior</button>':'')+(weighed?'<button class="btn btn-grey btn-sm" onclick="abrirPesarModal(\''+s.id+'\',true)">✏️ Editar</button>':'')+(esAdminOGerencia()&&weighed?'<button class="btn btn-grey btn-sm" onclick="abrirTsModal(\''+s.id+'\')">🕒 Fechas</button>':'')+(esAdminOGerencia()&&weighed?'<button class="btn btn-red btn-sm" onclick="borrarServicio(\''+s.id+'\')">️ Borrar</button>':'')+'</div>';}return'<div class="order '+cls+'"><div class="ohead"><span class="cliente-tag">🏨 '+esc(s.clienteNombre||'S/C')+(s.creadoPor==='admin'?' 👔':'')+'</span><span class="otime">'+ftime(s.createdAtLocal)+badge+'</span></div><div class="oitems">'+escL(s.nota||'Sin nota')+'</div>'+lineaRecogida(s)+diferenciaLine(s)+(infoS?'<div class="otime" style="margin-top:4px;">'+infoS+'</div>':'')+prendasTxt+albBtns+tsLine+extra+'<div class="ofoot" style="margin-top:8px;"><span class="st '+stClass(s.estado)+'">'+stLabel(s.estado)+'</span><div style="display:flex;gap:6px;flex-wrap:wrap;">'+botonesPara(s)+'</div></div></div>';}).join('');if(list.length>limitServ){html+='<button class="btn btn-grey btn-block" style="margin-top:8px;" onclick="verMasServ()">Ver más ('+(list.length-limitServ)+' restantes)</button>';}box.innerHTML=html;}
+function pedirAccion(id,est){var s=servicioPorId(id);if(!s)return;accionCtx={id:id,est:est};var c=clientById(s.clienteId)||{};document.getElementById('accionTitle').textContent= est==='RECOGIDO'?'🚚 Confirmar recogida':'📦 Confirmar entrega';document.getElementById('accionConfirmBtn').textContent= est==='RECOGIDO'?'✅ Confirmar recogida':'✅ Confirmar entrega';document.getElementById('accionNota').textContent= s.nota ? ('📝 Nota del cliente: '+s.nota) : '📝 Sin nota del cliente';var info='<div><b>Cliente:</b> '+esc(c.nombreComercial||c.nombre||s.clienteNombre||'—')+'</div>'+'<div><b>Peso declarado:</b> '+(s.pesoCliente!=null?s.pesoCliente+' kg':'—')+'</div>'+((s.kg&&est==='ENTREGADO')?'<div><b>Peso lavandería:</b> '+s.kg+' kg</div>':'')+((s.total&&est==='ENTREGADO')?'<div><b>Total (IGIC incl.):</b> '+fp(s.total)+'</div>':'');document.getElementById('accionInfo').innerHTML=info;document.getElementById('accionModal').classList.remove('hidden');}
+function cerrarAccion(){accionCtx=null;document.getElementById('accionModal').classList.add('hidden');}
+function confirmarAccion(){if(!accionCtx)return;var id=accionCtx.id,est=accionCtx.est;cerrarAccion();cambiarEstado(id,est);}
+function retrocederEstado(id){if(!esAdminOGerencia()){showToast('⚠️ Solo admin/gerencia puede retroceder','error');return;}var s=servicioPorId(id);if(!s)return;var prev=null;if(s.estado==='ENTREGADO')prev='PESADO';else if(s.estado==='PESADO')prev='RECOGIDO';else if(s.estado==='RECOGIDO')prev='SOLICITADO';if(!prev){showToast('️ Este servicio no puede retroceder','error');return;}if(!confirm('⚠️ Se volverá al paso anterior: '+stLabel(prev)+'.\n¿Continuar?'))return;var upd={estado:prev,updatedAtLocal:nowLocal()};var borrarFactura=null;if(prev==='PESADO'){upd.tsEntregado=null;}if(prev==='RECOGIDO'){upd.tsPesado=null;upd.facturaId=null;upd.kg=null;upd.prendas=null;upd.importeMaterial=null;upd.materialEspecial=null;upd.notaMaterial=null;upd.total=null;upd.diferenciaKg=null;upd.tsRecogido=null;if(s.facturaId){borrarFactura=facturaPorNumero(s.facturaId);}}var ops=[];if(borrarFactura)ops.push(db.ref('facturas/'+borrarFactura.id).remove());ops.push(db.ref('servicios/'+id).update(upd));Promise.all(ops).then(function(){showToast('✅ Servicio retrocedido a '+stLabel(prev),'success');}).catch(function(e){showToast('❌ Error: '+e.message,'error');});}
+function borrarServicio(id){if(!esAdminOGerencia()){showToast('⚠️ Solo admin/gerencia puede borrar','error');return;}if(!confirm('⚠️ Se borrará el servicio y su factura asociada.\n¿Continuar?'))return;var s=servicioPorId(id);if(!s)return;var ops=[db.ref('servicios/'+id).remove()];if(s.facturaId){var f=facturaPorNumero(s.facturaId);if(f)ops.push(db.ref('facturas/'+f.id).remove());}Promise.all(ops).then(function(){showToast('✅ Servicio y factura borrados','success');}).catch(function(e){showToast('❌ Error al borrar: '+e.message,'error');});}
+function abrirTsModal(id){var s=servicioPorId(id);if(!s)return;document.getElementById('tsId').value=id;document.getElementById('tsS').value=toLocalInput(s.tsSolicitado);document.getElementById('tsR').value=toLocalInput(s.tsRecogido);document.getElementById('tsP').value=toLocalInput(s.tsPesado);document.getElementById('tsE').value=toLocalInput(s.tsEntregado);document.getElementById('tsModal').classList.remove('hidden');}
+function cerrarTsModal(){document.getElementById('tsModal').classList.add('hidden');}
+function saveTs(){if(!requireFB())return;var id=document.getElementById('tsId').value;var s=servicioPorId(id);if(!s)return;var upd={};var vS=document.getElementById('tsS').value;var vR=document.getElementById('tsR').value;var vP=document.getElementById('tsP').value;var vE=document.getElementById('tsE').value;if(vS)upd.tsSolicitado=new Date(vS).getTime();if(vR)upd.tsRecogido=new Date(vR).getTime();if(vP)upd.tsPesado=new Date(vP).getTime();if(vE)upd.tsEntregado=new Date(vE).getTime();upd.updatedAtLocal=nowLocal();db.ref('servicios/'+id).update(upd).then(function(){if(vP&&s.facturaId){var f=facturaPorNumero(s.facturaId);if(f){var d=new Date(new Date(vP).getTime());db.ref('facturas/'+f.id).update({fecha:localISO(d),hora:pad2(d.getHours())+':'+pad2(d.getMinutes())});}}cerrarTsModal();showToast('✅ Fechas actualizadas','success');}).catch(function(e){showToast(' Error: '+e.message,'error');});}
+function cambiarEstado(id,est){if(!puedeCambiar(est)){showToast('⚠️ Tu rol no puede hacer eso','error');return;}if(!requireFB())return;var s=servicioPorId(id);if(!s){showToast('⚠️ Servicio no encontrado','error');return;}var upd={estado:est,updatedAtLocal:nowLocal()};if(est==='ENTREGADO')upd.tsEntregado=nowLocal();if(est==='RECOGIDO'){upd.tsRecogido=nowLocal();if(s.pesoCliente!=null&&(s.kg==null||s.kg===0)){upd.kg=s.pesoCliente;}}db.ref('servicios/'+id).update(upd).then(function(){showToast('✅ '+stLabel(est),'success');if(est==='RECOGIDO')preguntarAlbaran(id,'recogida');if(est==='ENTREGADO')preguntarAlbaran(id,'entrega');});}
+function forceRefresh(){if(!requireFB())return;db.ref('servicios').once('value').then(function(s){var d=s.val()||{};servicios=Object.keys(d).map(function(k){var o=d[k];o.id=k;return o;});renderAll();showToast('✅ Actualizado','success');});}
+function norm(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
+function escRe(k){return k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function matchField(h,keys){for(var k=0;k<keys.length;k++){var key=keys[k];if(h===key)return true;if(new RegExp('(^|[^a-z0-9])'+escRe(key)).test(h))return true;}return false;}
+var COLKEYS={nombrecomercial:['nombrecomercial','nombre comercial','comercial','denominacion','trading'],nombre:['nombre','cliente','client','razonsocial','razon social','hotel','establecimiento','name','empresa'],nif:['nif','cif','dni','nifcif','identificacion'],contacto:['contacto','persona','responsable','contact'],telefono:['telefono','tel','tlf','tfno','movil','phone'],email:['email','mail','correo'],direccion:['direccion','address','domicilio'],precio:['precio','tarifa','rate','kilo','kg','preciokg','precio kg','eur/kg','€/kg'],notas:['nota','notas','observacion','observaciones','comentario','comentarios']};
+var FIELDORDER=['nombrecomercial','nombre','nif','contacto','telefono','email','direccion','precio','notas'];
+function detectHeader(rows){var best=-1,bestScore=1;var lim=Math.min(rows.length,10);for(var r=0;r<lim;r++){var score=0;var row=rows[r];for(var c=0;c<row.length;c++){var h=norm(row[c]);if(!h)continue;for(var f in COLKEYS){if(matchField(h,COLKEYS[f])){score++;break;}}}if(score>bestScore){bestScore=score;best=r;}}return best;}
+function importClientes(input){var f=input.files&&input.files[0];if(!f){showToast('⚠️ Elige un archivo','error');return;}if(!requireFB())return;var reader=new FileReader();reader.onload=function(e){try{var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});if(!rows.length){showToast('️ Hoja vacía','error');return;}var hRow=detectHeader(rows);var header=(hRow>=0?rows[hRow]:rows[0]);var dataStart=(hRow>=0?hRow+1:1);var used={},col={};for(var fo=0;fo<FIELDORDER.length;fo++){var fld=FIELDORDER[fo];for(var c=0;c<header.length;c++){if(used[c])continue;var h=norm(header[c]);if(!h)continue;if(matchField(h,COLKEYS[fld])){col[fld]=c;used[c]=true;break;}}}var pending=[],omitidos=0;for(var r=dataStart;r<rows.length;r++){(function(row){function cell(fld){var i=col[fld];return(i!=null&&row[i]!=null)?String(row[i]).trim():'';}var ncom=cell('nombrecomercial');var nombre=cell('nombre')||ncom||cell('contacto');var nif=cell('nif'),contacto=cell('contacto'),tel=cell('telefono'),mail=cell('email'),dir=cell('direccion'),pre=cell('precio'),not=cell('notas');if(!nombre&&!contacto&&!tel&&!mail){omitidos++;return;}pending.push({nombre:nombre||contacto||'Sin nombre',nombreComercial:ncom,nif:nif,contacto:contacto,telefono:tel,email:mail,direccion:dir,precioKilo:parseFloat(String(pre).replace(',','.'))||0,notas:not,preciosPrendas:{},activo:true,origen:'import',createdAtLocal:nowLocal()});})(rows[r]);}if(!pending.length){showToast('⚠️ No se encontraron clientes válidos','error');return;}var updates={};pending.forEach(function(cc){updates[newId()]=cc;});db.ref('clientes').update(updates).then(function(){showToast('✅ '+pending.length+' clientes importados'+(omitidos?' · '+omitidos+' filas omitidas':''),'success');});}catch(err){showToast('❌ Error leyendo Excel: '+err.message,'error');}};reader.readAsArrayBuffer(f);input.value='';}
+function renderPreciosPrendasInputs(c){var box=document.getElementById('clPreciosPrendas');if(!box)return;var pp=(c&&c.preciosPrendas)||{};box.innerHTML=PRENDAS.map(function(p,i){return '<div class="prenda-row"><span>'+esc(p)+'</span><input class="input" type="number" step="0.01" min="0" id="pp_'+i+'" value="'+(pp[p]!=null?pp[p]:'')+'" placeholder="—"/></div>';}).join('');}
+function openClienteModal(id){var m=document.getElementById('clienteModal');var c=null;if(id)c=clientById(id);document.getElementById('clienteModalTitle').textContent=c?'✏️ Editar cliente':'➕ Nuevo cliente';document.getElementById('clId').value=c?c.id:'';document.getElementById('clNombre').value=c?c.nombre||'':'';document.getElementById('clNombreComercial').value=c?c.nombreComercial||'':'';document.getElementById('clNif').value=c?c.nif||'':'';document.getElementById('clContacto').value=c?c.contacto||'':'';document.getElementById('clTelefono').value=c?c.telefono||'':'';document.getElementById('clEmail').value=c?c.email||'':'';document.getElementById('clDireccion').value=c?c.direccion||'':'';document.getElementById('clPrecio').value=c?(c.precioKilo||''):'';document.getElementById('clNotas').value=c?c.notas||'':'';renderPreciosPrendasInputs(c);m.classList.remove('hidden');}
+function cerrarClienteModal(){document.getElementById('clienteModal').classList.add('hidden');}
+function saveCliente(){if(!requireFB())return;var id=document.getElementById('clId').value;var pp={};PRENDAS.forEach(function(p,i){var v=parseFloat(document.getElementById('pp_'+i).value);if(!isNaN(v)&&v>0)pp[p]=v;});var data={nombre:document.getElementById('clNombre').value.trim(),nombreComercial:document.getElementById('clNombreComercial').value.trim(),nif:document.getElementById('clNif').value.trim(),contacto:document.getElementById('clContacto').value.trim(),telefono:document.getElementById('clTelefono').value.trim(),email:document.getElementById('clEmail').value.trim(),direccion:document.getElementById('clDireccion').value.trim(),precioKilo:parseFloat(document.getElementById('clPrecio').value)||0,notas:document.getElementById('clNotas').value.trim(),preciosPrendas:pp,activo:true,updatedAtLocal:nowLocal()};if(!data.nombre){showToast('⚠️ El nombre es obligatorio','error');return;}if(id){db.ref('clientes/'+id).update(data).then(function(){cerrarClienteModal();showToast('✅ Cliente actualizado','success');});}else{data.createdAtLocal=nowLocal();data.origen='manual';db.ref('clientes/'+newId()).set(data).then(function(){cerrarClienteModal();showToast('✅ Cliente creado','success');});}}
+function delCliente(id){if(!confirm('¿Eliminar cliente?'))return;db.ref('clientes/'+id).remove();}
+function verMasCli(){limitCli+=25;renderClientes();}
+function filtrarClientesTexto(v){clienteFiltroTexto=(v||'').trim();limitCli=25;renderClientes();}
+function renderClientes(){var b=document.getElementById('clientesList');if(!b)return;if(!clientes.length){b.innerHTML='<div class="empty">Sin clientes. Importa un Excel o crea uno a mano.</div>';return;}var sorted=clientes.slice().sort(function(a,b2){return String(a.nombre||'').localeCompare(String(b2.nombre||''));});var q=norm(clienteFiltroTexto);if(q){sorted=sorted.filter(function(c){var hay=norm(c.nombre||'')+' '+norm(c.nombreComercial||'');return hay.indexOf(q)!==-1;});}if(!sorted.length){b.innerHTML='<div class="empty">Ningún cliente coincide con "'+esc(clienteFiltroTexto)+'".</div>';return;}var shown=sorted.slice(0,limitCli);var html=shown.map(function(c){var sub=[c.contacto,c.telefono,c.email,c.direccion].filter(Boolean).join(' · ');var nprecios=c.preciosPrendas?Object.keys(c.preciosPrendas).length:0;return'<div class="alertrow" style="border-left-color:var(--blue);flex-wrap:wrap;"><div style="flex:1;"><b>'+esc(c.nombre||'')+'</b>'+(c.nombreComercial&&c.nombreComercial!==c.nombre?' <span class="otime">· '+esc(c.nombreComercial)+'</span>':'')+(c.nif?' <span class="otime">· NIF '+esc(c.nif)+'</span>':'')+(c.precioKilo?' <span class="otime">· '+fp(c.precioKilo)+'/kg</span>':'')+(nprecios?' <span class="otime">· '+nprecios+' precio(s)</span>':'')+'<div class="otime">'+esc(sub)+'</div>'+(c.notas?'<div class="otime">📝 '+esc(c.notas)+'</div>':'')+'</div><div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-grey btn-sm" onclick="verQRCliente(\''+c.id+'\')">📱</button><button class="btn btn-grey btn-sm" onclick="abrirRecogidaModal(\''+c.id+'\')">🧺 Pedido</button><button class="btn btn-grey btn-sm" onclick="openClienteModal(\''+c.id+'\')">✏️</button><button class="btn btn-red btn-sm" onclick="delCliente(\''+c.id+'\')">🗑️</button></div></div>';}).join('');if(sorted.length>limitCli){html+='<button class="btn btn-grey btn-block" style="margin-top:8px;" onclick="verMasCli()">Ver más ('+(sorted.length-limitCli)+' restantes)</button>';}b.innerHTML=html;}
+function urlQRCliente(id){return location.origin+location.pathname+'?vista=cliente&cliente='+encodeURIComponent(id);}
+function mostrarQRClientes(){var pv=document.getElementById('qrClientesPreview');if(!pv)return;if(!clientes.length){pv.classList.remove('hidden');pv.innerHTML='<div class="empty">Primero crea o importa clientes</div>';return;}pv.classList.remove('hidden');pv.innerHTML='<div class="qr-grid" id="qrCG"></div>';ensureQR(function(ok){var g=document.getElementById('qrCG');if(!g)return;g.innerHTML='';clientes.forEach(function(c,i){var url=urlQRCliente(c.id);var card=document.createElement('div');card.className='qr-card';card.innerHTML='<div id="qrcC'+i+'"></div><h4>'+esc(c.nombreComercial||c.nombre||'')+'</h4>'+(c.nif?'<div class="otime">'+esc(c.nif)+'</div>':'')+'<button class="btn btn-grey btn-sm" style="margin-top:8px;" onclick="copiarURL(\''+encodeURIComponent(url)+'\')">📋 Copiar</button>';g.appendChild(card);if(ok){var el=document.getElementById('qrcC'+i);if(el&&typeof QRCode!=='undefined'){new QRCode(el,{text:url,width:140,height:140,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});}}});if(!ok){showToast('⚠️ No se pudo cargar el generador de QR; usa Copiar','error');}});}
+function copiarURL(enc){var url=decodeURIComponent(enc);if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){showToast('✅ URL copiada','success');});else showToast(url);}
+function verQRCliente(id){var c=clientById(id);if(!c)return;var url=urlQRCliente(id);qrModalUrl=url;document.getElementById('qrModalTitle').textContent='📱 QR de '+(c.nombreComercial||c.nombre||'');document.getElementById('qrModalUrl').textContent=url;var box=document.getElementById('qrModalBox');box.innerHTML='';ensureQR(function(ok){if(ok&&typeof QRCode!=='undefined'){new QRCode(box,{text:url,width:180,height:180,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});}else{box.innerHTML='<div class="otime">No se pudo generar el QR.</div>';}});document.getElementById('qrModal').classList.remove('hidden');}
+function cerrarQRModal(){document.getElementById('qrModal').classList.add('hidden');}
+function copiarQRModal(){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(qrModalUrl).then(function(){showToast('✅ URL copiada','success');});}else{showToast(qrModalUrl);}}
+function verMasFac(){limitFac+=15;renderFacturas();}
+function renderContab(){var now=new Date(),hoy=localISO(now);var is=new Date(now);var ds=now.getDay()||7;is.setDate(now.getDate()-ds+1);var fS=localISO(is);var fM=now.getFullYear()+'-'+pad2(now.getMonth()+1);var T=0,D=0,S=0,M=0;facturas.forEach(function(f){if(f.estado==='ANULADA')return;var t=Number(f.total)||0;T+=t;if(f.fecha===hoy)D+=t;if(f.fecha>=fS)S+=t;if(f.fecha>=fM)M+=t;});var e1=document.getElementById('contDia'),e2=document.getElementById('contSem'),e3=document.getElementById('contMes'),e4=document.getElementById('contTot');if(e1)e1.textContent=fp(D);if(e2)e2.textContent=fp(S);if(e3)e3.textContent=fp(M);if(e4)e4.textContent=fp(T);}
+function renderFacturas(){var b=document.getElementById('facturasList');if(!b)return;var activas=facturas.filter(function(f){return f.estado!=='ANULADA';});if(!activas.length){b.innerHTML='<div class="empty">Sin facturas</div>';return;}var sorted=activas.slice().sort(function(a,b2){return(b2.timestamp||0)-(a.timestamp||0);});var shown=sorted.slice(0,limitFac);var html=shown.map(function(f){var acciones='';if(role==='admin'){acciones='<div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-grey btn-sm" onclick="abrirFacturaEdit(\''+f.id+'\')">✏️</button><button class="btn btn-red btn-sm" onclick="anularFactura(\''+f.id+'\')">🗑️</button></div>';}return '<div class="alertrow" style="border-left-color:var(--purple)"><div style="flex:1;"><b>'+esc(f.numero||'S/N')+'</b> · '+esc(f.clienteNombre||'')+'<div class="otime">'+esc(f.fecha||'')+' · '+f.kg+' kg'+(f.materialImporte?' · 🧵 +'+fp(f.materialImporte):'')+'</div></div><div style="display:flex;align-items:center;gap:10px;"><b>'+fp(f.total)+'</b>'+acciones+'</div></div>';}).join('');if(sorted.length>limitFac){html+='<button class="btn btn-grey btn-block" style="margin-top:8px;" onclick="verMasFac()">Ver más ('+(sorted.length-limitFac)+' restantes)</button>';}b.innerHTML=html;var anuladas=facturas.filter(function(f){return f.estado==='ANULADA';});var btnAnuladas=document.getElementById('btnVerAnuladas');if(btnAnuladas){if(anuladas.length>0 && role==='admin'){btnAnuladas.style.display='inline-flex';btnAnuladas.textContent='️ Ver facturas anuladas ('+anuladas.length+')';}else{btnAnuladas.style.display='none';}}}
+function abrirFacturaEdit(fid){var f=facturaPorId(fid);if(!f){showToast('⚠️ Factura no encontrada','error');return;}document.getElementById('facEditId').value=fid;document.getElementById('facEditNumero').value=f.numero||'';document.getElementById('facEditFecha').value=f.fecha||'';document.getElementById('facEditKg').value=f.kg||0;document.getElementById('facEditTotal').value=f.total||0;facEditFiltroCliente='';document.getElementById('facEditFiltroCliente').value='';renderFacEditClientes();var sel=document.getElementById('facEditCliente');if(f.clienteId) sel.value=f.clienteId;document.getElementById('facturaEditModal').classList.remove('hidden');}
+function renderFacEditClientes(){var sel=document.getElementById('facEditCliente');var q=norm(facEditFiltroCliente);var list=clientes.slice();if(q){list=list.filter(function(c){var hay=norm(c.nombre||'')+' '+norm(c.nombreComercial||'');return hay.indexOf(q)!==-1;});}sel.innerHTML=list.map(function(c){return '<option value="'+c.id+'">'+esc(c.nombreComercial||c.nombre||'')+'</option>';}).join('');}
+function filtrarFacEditCliente(v){facEditFiltroCliente=(v||'').trim();renderFacEditClientes();}
+function cerrarFacturaEdit(){document.getElementById('facturaEditModal').classList.add('hidden');}
+function guardarFacturaEdit(){if(!requireFB())return;var fid=document.getElementById('facEditId').value;var f=facturaPorId(fid);if(!f){showToast('⚠️ Factura no encontrada','error');return;}var upd={numero:document.getElementById('facEditNumero').value.trim(),fecha:document.getElementById('facEditFecha').value,kg:parseFloat(document.getElementById('facEditKg').value)||0,total:parseFloat(document.getElementById('facEditTotal').value)||0,clienteId:document.getElementById('facEditCliente').value};var c=clientById(upd.clienteId);if(c) upd.clienteNombre=c.nombreComercial||c.nombre;var ops=[db.ref('facturas/'+fid).update(upd)];if(f.servicioId){ops.push(db.ref('servicios/'+f.servicioId).update({facturaId:upd.numero, clienteId:upd.clienteId, clienteNombre:upd.clienteNombre}));}Promise.all(ops).then(function(){cerrarFacturaEdit();showToast('✅ Factura actualizada','success');renderFacturas();}).catch(function(e){showToast('❌ Error: '+e.message,'error');});}
+function anularFactura(fid){if(!requireFB()) return;var f=facturaPorId(fid);if(!f){showToast('⚠️ Factura no encontrada','error');return;}var tec=prompt('⚠️ Se anulará la factura '+f.numero+'.\nEl servicio mantendrá su estado pero quedará sin factura.\nEscribe ANULAR para confirmar:');if(tec!=='ANULAR'){showToast('❌ Anulación cancelada','error');return;}db.ref('facturas/'+fid).update({estado:'ANULADA'}).then(function(){if(f.servicioId){db.ref('servicios/'+f.servicioId).update({facturaId:null});}showToast('✅ Factura anulada. El servicio mantiene su estado.','success');renderFacturas();}).catch(function(e){showToast(' Error: '+e.message,'error');});}
+function restaurarFactura(fid){if(!requireFB()) return;var f=facturaPorId(fid);if(!f){showToast('⚠️ Factura no encontrada','error');return;}if(!confirm('¿Restaurar la factura '+f.numero+'?'))return;db.ref('facturas/'+fid).update({estado:null}).then(function(){showToast('✅ Factura restaurada','success');renderFacturas();renderFacturasAnuladas();}).catch(function(e){showToast('❌ Error: '+e.message,'error');});}
+function toggleAnuladas(){var wrap=document.getElementById('facturasAnuladasWrap');if(!wrap)return;mostrarAnuladas=!mostrarAnuladas;if(mostrarAnuladas){wrap.classList.remove('hidden');renderFacturasAnuladas();}else{wrap.classList.add('hidden');}}
+function renderFacturasAnuladas(){var box=document.getElementById('facturasAnuladasList');if(!box)return;var anuladas=facturas.filter(function(f){return f.estado==='ANULADA';});if(!anuladas.length){box.innerHTML='<div class="empty">No hay facturas anuladas</div>';return;}box.innerHTML=anuladas.map(function(f){var acciones=role==='admin'?'<button class="btn btn-green btn-sm" onclick="restaurarFactura(\''+f.id+'\')">♻️ Restaurar</button>':'';return '<div class="alertrow anulada" style="flex-wrap:wrap;"><div style="flex:1;"><b>'+esc(f.numero||'S/N')+'</b> · '+esc(f.clienteNombre||'')+'<div class="otime">'+esc(f.fecha||'')+' · '+f.kg+' kg · '+fp(f.total)+'</div></div>'+acciones+'</div>';}).join('');}
+function abrirFacturaManual(){if(role!=='admin'){showToast('⚠️ Solo admin','error');return;}var ventana = window.open('', 'FacturaManual', 'width=700,height=800,scrollbars=yes,resizable=yes');if(!ventana){showToast('⚠️ El navegador bloqueó la ventana emergente. Permite popups para este sitio.','error');return;}var html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><title>Factura Manual</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#0a0a0f;color:#f4f4f5;padding:20px;margin:0;} .card{background:#1a1a24;border:1px solid #2a2a38;border-radius:16px;padding:20px;margin-bottom:16px;} h2{color:#f59e0b;margin-bottom:16px;} .fld-label{font-size:13px;color:#a1a1aa;margin-bottom:4px;display:block;} .input,.textarea,select.input{width:100%;padding:12px;background:#13131a;border:1px solid #2a2a38;border-radius:8px;color:#f4f4f5;font-size:14px;margin-bottom:10px;box-sizing:border-box;} .input:focus,.textarea:focus,select.input:focus{outline:none;border-color:#f59e0b;} .btn{padding:10px 16px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;} .btn-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;} .btn-grey{background:#13131a;color:#f4f4f5;border:1px solid #2a2a38;} .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;} .total-box{background:#0a0a0f;padding:12px;border-radius:8px;font-size:18px;font-weight:bold;color:#f59e0b;text-align:center;margin:10px 0;} .info{font-size:12px;color:#71717a;margin-top:4px;} .search-input{margin-bottom:6px;}</style></head><body><div class="card"><h2>➕ Factura Manual</h2><p class="info">Completa los datos. El número se autogenera al guardar.</p><label class="fld-label">Tipo de factura</label><select class="input" id="fmTipo"><option value="FM">FM - Mensual</option><option value="FQ">FQ - Quincenal</option><option value="FS">FS - Semanal</option></select><label class="fld-label">Periodo (YYYYMMDD o YYYYMM)</label><input class="input" type="text" id="fmPeriodo" placeholder="Ej: 20261001"/><label class="fld-label">Cliente *</label><input class="input search-input" type="text" id="fmFiltroCliente" placeholder="🔍 Escribe las primeras letras del cliente..." oninput="filtrarClientesManual()"/><select class="input" id="fmCliente" onchange="onClientChange()" size="6"></select><label class="fld-label">Fecha Factura</label><input class="input" type="date" id="fmFecha"/><div class="grid-2"><div><label class="fld-label">F. Recogida</label><input class="input" type="date" id="fmFechaRec"/></div><div><label class="fld-label">F. Pesaje</label><input class="input" type="date" id="fmFechaPes"/></div><div><label class="fld-label">F. Entrega</label><input class="input" type="date" id="fmFechaEnt"/></div><div><label class="fld-label">Kg</label><input class="input" type="number" step="0.01" id="fmKg" oninput="calcTotal()"/></div><div><label class="fld-label">Precio/kg (€)</label><input class="input" type="number" step="0.01" id="fmPrecio" oninput="calcTotal()"/></div><div><label class="fld-label">Material (€)</label><input class="input" type="number" step="0.01" id="fmMaterial" value="0" oninput="calcTotal()"/></div></div><div class="fld-label">Total Base (€) <span style="color:#f59e0b;font-size:11px;">(Auto)</span></div><div class="total-box" id="fmTotal">0,00 €</div><label class="fld-label">Vincular a servicio existente (Opcional)</label><select class="input" id="fmServicio"><option value="">— Ninguno (Crear servicio fantasma) —</option></select><label class="fld-label">Notas</label><textarea class="textarea" id="fmNotas" rows="3" placeholder="Notas opcionales..."></textarea><div style="margin-top:16px;"><button class="btn btn-gold" onclick="guardar()">💾 Crear Factura</button><button class="btn btn-grey" onclick="window.close()">Cancelar</button></div></div><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"><\/script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"><\/script><script>var firebaseConfig='+JSON.stringify(firebaseConfig)+';var db, clientes=[], servicios=[], clientesFiltrados=[];firebase.initializeApp(firebaseConfig);db = firebase.database();db.ref("clientes").once("value").then(function(snap){var data = snap.val() || {};clientes = Object.keys(data).map(function(k){var o=data[k];o.id=k;return o;});clientes.sort(function(a,b){return String(a.nombre||"").localeCompare(String(b.nombre||""));});clientesFiltrados=clientes.slice();renderClientes();}).catch(function(e){alert("Error cargando clientes: "+e.message);});db.ref("servicios").once("value").then(function(snap){var data = snap.val() || {};servicios = Object.keys(data).map(function(k){var o=data[k];o.id=k;return o;});var libres = servicios.filter(function(s){return ["PESADO","ENTREGADO"].indexOf(s.estado)!==-1 && !s.facturaId;});var sel = document.getElementById("fmServicio");sel.innerHTML = "<option value=\\"\\">— Ninguno (Crear servicio fantasma) —</option>" + libres.map(function(s){return "<option value=\\""+s.id+"\\">"+(s.clienteNombre||"Sin nombre")+" ("+s.estado+")</option>";}).join("");}).catch(function(e){console.log("Error servicios:", e);});var hoy=new Date();document.getElementById("fmFecha").value = hoy.toISOString().split("T")[0];document.getElementById("fmPeriodo").value = hoy.getFullYear()+""+String(hoy.getMonth()+1).padStart(2,"0")+""+String(hoy.getDate()).padStart(2,"0");function renderClientes(){var sel=document.getElementById("fmCliente");sel.innerHTML=clientesFiltrados.map(function(c){return "<option value=\\""+c.id+"\\">"+(c.nombreComercial||c.nombre||"Sin nombre")+(c.nif?" ("+c.nif+")":"")+"</option>";}).join("");}function filtrarClientesManual(){var q=document.getElementById("fmFiltroCliente").value.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").trim();clientesFiltrados=clientes.filter(function(c){var hay=(c.nombre||"")+" "+(c.nombreComercial||"");return hay.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").indexOf(q)!==-1;});renderClientes();}function onClientChange(){var cid = document.getElementById("fmCliente").value;if(!cid){document.getElementById("fmPrecio").value="";calcTotal();return;}var c = clientes.find(function(x){return x.id===cid;});if(c){document.getElementById("fmPrecio").value = c.precioKilo||0;calcTotal();}}function calcTotal(){var kg = parseFloat(document.getElementById("fmKg").value)||0;var precio = parseFloat(document.getElementById("fmPrecio").value)||0;var mat = parseFloat(document.getElementById("fmMaterial").value)||0;var total = (kg*precio)+mat;document.getElementById("fmTotal").textContent = total.toFixed(2).replace(".",",")+" €";}function guardar(){var tipo=document.getElementById("fmTipo").value;var periodo=document.getElementById("fmPeriodo").value;var cid = document.getElementById("fmCliente").value;var kg = parseFloat(document.getElementById("fmKg").value);var precio = parseFloat(document.getElementById("fmPrecio").value);var mat = parseFloat(document.getElementById("fmMaterial").value)||0;var fecha = document.getElementById("fmFecha").value;var fechaPes = document.getElementById("fmFechaPes").value;var fechaEnt = document.getElementById("fmFechaEnt").value;var notas = document.getElementById("fmNotas").value.trim();var sid = document.getElementById("fmServicio").value;if(!cid){alert("⚠️ Elige un cliente");return;}if(!periodo){alert("⚠️ Elige un periodo");return;}if(!kg||kg<=0){alert("⚠️ Kg no válidos");return;}var total = (kg*precio)+mat;if(total<=0){alert("⚠️ Total no válido");return;}var c = clientes.find(function(x){return x.id===cid;});if(!c){alert("⚠️ Cliente no encontrado");return;}var key="config/contadorFactura"+tipo;db.ref(key).transaction(function(cur){return (cur||0)+1;}, function(err, committed, snap){if(err||!committed){alert("❌ Error al numerar");return;}var n = snap.val();var num = tipo+"-"+periodo+"-"+String(n).padStart(4,"0");var d = new Date(fecha?fecha+"T12:00:00":Date.now());var fechaISO = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");var hora = String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");var facturaData = {numero:num,tipo:tipo,periodo:periodo,fecha:fechaISO,hora:hora,timestamp:d.getTime(),clienteId:cid,clienteNombre:c.nombreComercial||c.nombre,kg:kg,precioKilo:precio,base:Math.round((kg*precio)*100)/100,materialImporte:mat,materialDesc:notas,total:total,servicioId:sid||null,esManual:true};var ops = [db.ref("facturas/"+db.ref().push().key).set(facturaData)];if(sid){var updServ = {facturaId:num, kg:kg, total:total, precioKilo:precio, importeMaterial:mat, notaMaterial:notas};if(fechaPes) updServ.tsPesado = new Date(fechaPes+"T12:00:00").getTime();if(fechaEnt) updServ.tsEntregado = new Date(fechaEnt+"T12:00:00").getTime();ops.push(db.ref("servicios/"+sid).update(updServ));} else {var ghostId = db.ref().push().key;var ghostServ = {clienteId:cid,clienteNombre:c.nombreComercial||c.nombre,nota:notas||"Factura manual",estado:"ENTREGADO",kg:kg,precioKilo:precio,total:total,importeMaterial:mat,materialEspecial:notas,facturaId:num,tsPesado:fechaPes?new Date(fechaPes+"T12:00:00").getTime():d.getTime(),tsEntregado:fechaEnt?new Date(fechaEnt+"T12:00:00").getTime():d.getTime(),createdAtLocal:d.getTime(),updatedAtLocal:Date.now(),esManual:true};ops.push(db.ref("servicios/"+ghostId).set(ghostServ));}Promise.all(ops).then(function(){alert("✅ Factura manual creada: "+num);if(window.opener && !window.opener.closed){window.opener.location.reload();}window.close();}).catch(function(e){alert("❌ Error: "+e.message);});});}<\/script></body></html>';ventana.document.write(html);ventana.document.close();}
+function onTipoFacturaChange(){var tipo = document.getElementById('fmTipo').value;setRangoFechas(tipo === 'FS' ? 7 : (tipo === 'FQ' ? 15 : 'mes'));}
+function setRangoFechas(rango){var hoy = new Date();var desde = new Date();if(rango === 'mes'){desde = new Date(hoy.getFullYear(), hoy.getMonth(), 1);} else {desde.setDate(hoy.getDate() - rango);}document.getElementById('fmFechaDesde').value = localISO(desde);document.getElementById('fmFechaHasta').value = localISO(hoy);}
+function soloNumerosNif(nif){if(!nif) return '';return String(nif).replace(/[^0-9]/g, '');}
+function filtrarNif(v){fmFiltroNif = v;renderAdminFM();}
+function renderAdminFM(){var selC=document.getElementById('fmCliente'),selModo=document.getElementById('fmModo');var tipo = document.getElementById('fmTipo').value;if(!selC)return;var modo=selModo?selModo.value:'cliente';var lbl=document.getElementById('fmClienteLabel');var ind=document.getElementById('fmIndicador');var curC=selC.value;var nifWrap = document.getElementById('fmNifFilterWrap');if(modo==='nif'){if(lbl)lbl.textContent='NIF/CIF:';nifWrap.classList.remove('hidden');var nifsMap = {};clientes.forEach(function(c){if(c.nif){var nums = soloNumerosNif(c.nif);if(nums) nifsMap[nums] = c.nif;}});var nifList = Object.keys(nifsMap).sort();var busq = fmFiltroNif.replace(/[^0-9]/g, '');if(busq){nifList = nifList.filter(function(n){return n.indexOf(busq) !== -1;});}selC.innerHTML = nifList.map(function(n){var original = nifsMap[n];return '<option value="'+esc(original)+'">'+esc(original)+'</option>';}).join('');if(!nifList.length) selC.innerHTML='<option value="">— Sin coincidencias —</option>';if(curC && nifList.some(function(n){return nifsMap[n]===curC;})) selC.value=curC;if(ind) ind.textContent='Modo: agrupando por NIF/CIF ('+nifList.length+' encontrados)';} else {if(lbl)lbl.textContent='Cliente:';nifWrap.classList.add('hidden');var q=norm(fmFiltroCliente);var list=clientes.slice();if(q){list=list.filter(function(c){var hay=norm(c.nombre||'')+' '+norm(c.nombreComercial||'');return hay.indexOf(q)!==-1;});}selC.innerHTML=list.map(function(c){return '<option value="'+c.id+'">'+esc(c.nombreComercial||c.nombre||'')+'</option>';}).join('');if(curC&&list.some(function(c){return c.id===curC;}))selC.value=curC;if(ind)ind.textContent='Modo: factura individual.'+(q?' ('+list.length+' cliente(s))':'');}}
+function adminGenerarFM(){var selModo=document.getElementById('fmModo');var modo=selModo?selModo.value:'cliente';var val=document.getElementById('fmCliente').value;var tipo = document.getElementById('fmTipo').value;var desdeStr = document.getElementById('fmFechaDesde').value;var hastaStr = document.getElementById('fmFechaHasta').value;if(!val){showToast('⚠️ Elige cliente/NIF','error');return;}if(!desdeStr || !hastaStr){showToast('⚠️ Define el rango de fechas','error');return;}var periodoKey = desdeStr.replace(/-/g,'') + '_' + hastaStr.replace(/-/g,'');if(modo==='nif'){generarPDFPorNIF(val, tipo, periodoKey, desdeStr, hastaStr);}else{generarPDFMensual(val, tipo, periodoKey, desdeStr, hastaStr);}}
+function getServiciosEnRango(clientIds, desdeStr, hastaStr){var desdeTime = new Date(desdeStr+'T00:00:00').getTime();var hastaTime = new Date(hastaStr+'T23:59:59').getTime();return servicios.filter(function(s){if(clientIds && !clientIds[s.clienteId]) return false;if(['PESADO','ENTREGADO'].indexOf(s.estado)===-1) return false;if(!(Number(s.total)||0)>0) return false;var t = s.tsPesado || s.createdAtLocal;return t >= desdeTime && t <= hastaTime;}).sort(function(a,b){return(a.createdAtLocal||0)-(b.createdAtLocal||0);});}
+function generarPDFPorNIF(nif, tipo, periodoKey, desdeStr, hastaStr){if(typeof window.jspdf==='undefined'||!window.jspdf.jsPDF){showToast('❌ Librería PDF no cargada','error');return;}var clientsWithNif=clientes.filter(function(c){return c.nif===nif;});if(!clientsWithNif.length){showToast('️ No hay clientes con ese NIF','error');return;}var clientIds={};clientsWithNif.forEach(function(c){clientIds[c.id]=c;});var lines = getServiciosEnRango(clientIds, desdeStr, hastaStr);if(!lines.length){showToast('⚠️ No hay lavados facturables en ese rango','error');return;}ensureFacturaMensualNIF(nif, tipo, periodoKey, function(rec){buildPDFNIF(nif, tipo, periodoKey, desdeStr, hastaStr, lines, clientIds, rec);});}
+function ensureFacturaMensualNIF(nif, tipo, periodoKey, cb){var safeNif=String(nif).replace(/[^a-zA-Z0-9]/g,'_');var key='NIF_'+safeNif+'_'+periodoKey;db.ref('facturasMensuales/'+key).once('value').then(function(s){var rec=s.val();if(rec&&rec.numero){cb(rec);return;}nextNumeroFactura(tipo, periodoKey, function(num){var newRec={numero:num, tipo:tipo, periodoKey:periodoKey, nif:nif, createdAt:Date.now()};db.ref('facturasMensuales/'+key).set(newRec).then(function(){cb(newRec);});});});}
+function buildPDFNIF(nif, tipo, periodoKey, desdeStr, hastaStr, lines, clientIds, rec){var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF();doc.setFontSize(14);doc.text(empresa.nombre||'Tu Lavandería',14,18);doc.setFontSize(9);doc.text('NIF: '+(empresa.nif||''),14,24);doc.text(empresa.direccion||'',14,29);doc.setFontSize(11);doc.text('Factura '+tipo+' agrupada (por NIF/CIF)',14,38);doc.setFontSize(10);doc.text('Nº factura: '+rec.numero,14,46);doc.text('Periodo: Del '+fmtFecha(desdeStr)+' al '+fmtFecha(hastaStr),14,52);doc.text('Fecha emisión: '+new Date().toLocaleDateString('es-ES'),14,58);doc.text('NIF/CIF cliente: '+nif,14,66);var nombresComerciales={};lines.forEach(function(s){var c=clientIds[s.clienteId];if(c){nombresComerciales[c.nombreComercial||c.nombre]=1;}});var ncList=Object.keys(nombresComerciales).join(', ');doc.text('Negocios: '+ncList,14,72);var cy=78;var body=lines.map(function(s){var c=clientIds[s.clienteId];var nombreCli=c?(c.nombreComercial||c.nombre):'';var base=(Number(s.total)||0)-(Number(s.importeMaterial)||0);var fR=fechaRecogidaCascada(s);return [nombreCli, fdtShort(fR), fdtShort(s.tsPesado), fdtShort(s.tsEntregado), (s.kg||0), (Number(s.precioKilo)||0).toFixed(2), base.toFixed(2), (Number(s.importeMaterial)||0).toFixed(2), (Number(s.total)||0).toFixed(2), notaPlana(s)];});var sumKg=0,sumBase=0;lines.forEach(function(s){sumKg+=Number(s.kg)||0;sumBase+=Number(s.total)||0;});var igic=igicOf(sumBase);var total=Math.round((sumBase+igic)*100)/100;doc.autoTable({startY:cy+6,head:[['Cliente','F.Rec','F.Pes','F.Ent','Kg','€/Kg','Base','Mat','Total','Notas']],body:body,foot:[['TOTALES','','','',sumKg.toFixed(1),'','','',sumBase.toFixed(2),'']],styles:{fontSize:7},headStyles:{fillColor:[245,158,11]},footStyles:{fillColor:[26,26,36],textColor:[244,244,245]}});var y=doc.lastAutoTable.finalY+8;doc.setFontSize(10);doc.text('Base: '+sumBase.toFixed(2)+' €',14,y);y+=6;doc.text('IGIC (7%): '+igic.toFixed(2)+' €',14,y);y+=8;doc.setFontSize(12);doc.text('TOTAL: '+total.toFixed(2)+' €',14,y);y+=8;doc.setFontSize(8);doc.text('Cuenta: '+(empresa.cuenta||''),14,y);doc.save('Factura_'+rec.numero+'.pdf');showToast('✅ PDF agrupado descargado: '+rec.numero,'success');}
+function generarPDFMensual(clientId, tipo, periodoKey, desdeStr, hastaStr){if(typeof window.jspdf==='undefined'||!window.jspdf.jsPDF){showToast('❌ Librería PDF no cargada','error');return;}var c=clientById(clientId);if(!c){showToast('⚠️ Cliente no encontrado','error');return;}var lines = getServiciosEnRango(null, desdeStr, hastaStr).filter(function(s){return s.clienteId===clientId;});if(!lines.length){showToast('⚠️ No hay lavados facturables en ese rango','error');return;}ensureFacturaMensual(clientId, tipo, periodoKey, function(rec){buildPDF(c, tipo, periodoKey, desdeStr, hastaStr, lines, rec);});}
+function ensureFacturaMensual(clientId, tipo, periodoKey, cb){var key=clientId+'_'+periodoKey;db.ref('facturasMensuales/'+key).once('value').then(function(s){var rec=s.val();if(rec&&rec.numero){cb(rec);return;}nextNumeroFactura(tipo, periodoKey, function(num){var newRec={numero:num, tipo:tipo, periodoKey:periodoKey, clientId:clientId, createdAt:Date.now()};db.ref('facturasMensuales/'+key).set(newRec).then(function(){cb(newRec);});});});}
+function buildPDF(c, tipo, periodoKey, desdeStr, hastaStr, lines, rec){var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF();doc.setFontSize(14);doc.text(empresa.nombre||'Tu Lavandería',14,18);doc.setFontSize(9);doc.text('NIF: '+(empresa.nif||''),14,24);doc.text(empresa.direccion||'',14,29);doc.setFontSize(11);doc.text('Factura '+tipo+' de servicios',14,38);doc.setFontSize(10);doc.text('Nº factura: '+rec.numero,14,46);doc.text('Periodo: Del '+fmtFecha(desdeStr)+' al '+fmtFecha(hastaStr),14,52);doc.text('Fecha emisión: '+new Date().toLocaleDateString('es-ES'),14,58);doc.text('Cliente: '+(c.nombre||''),14,66);var cy=72;if(c.nombreComercial){doc.text('Comercial: '+c.nombreComercial,14,cy);cy+=6;}if(c.nif){doc.text('NIF/CIF: '+c.nif,14,cy);cy+=6;}var body=lines.map(function(s){var base=(Number(s.total)||0)-(Number(s.importeMaterial)||0);var fR=fechaRecogidaCascada(s);return [fdtShort(fR), fdtShort(s.tsPesado), fdtShort(s.tsEntregado), (s.facturaId||''), (s.kg||0), (Number(s.precioKilo)||0).toFixed(2), base.toFixed(2), (Number(s.importeMaterial)||0).toFixed(2), (Number(s.total)||0).toFixed(2), notaPlana(s)];});var sumKg=0,sumBase=0;lines.forEach(function(s){sumKg+=Number(s.kg)||0;sumBase+=Number(s.total)||0;});var igic=igicOf(sumBase);var total=Math.round((sumBase+igic)*100)/100;doc.autoTable({startY:cy+6,head:[['F.Rec','F.Pes','F.Ent','Nº','Kg','€/Kg','Base','Mat','Total','Notas']],body:body,foot:[['','','','',sumKg.toFixed(1),'','','',sumBase.toFixed(2),'']],styles:{fontSize:7},headStyles:{fillColor:[245,158,11]},footStyles:{fillColor:[26,26,36],textColor:[244,244,245]}});var y=doc.lastAutoTable.finalY+8;doc.setFontSize(10);doc.text('Base: '+sumBase.toFixed(2)+' €',14,y);y+=6;doc.text('IGIC (7%): '+igic.toFixed(2)+' €',14,y);y+=8;doc.setFontSize(12);doc.text('TOTAL: '+total.toFixed(2)+' €',14,y);y+=8;doc.setFontSize(8);doc.text('Cuenta: '+(empresa.cuenta||''),14,y);doc.save('Factura_'+rec.numero+'.pdf');showToast('✅ PDF descargado: '+rec.numero,'success');}
+function fechaRecogidaCascada(s){if(!s) return null;if(s.tsRecogido) return s.tsRecogido;for(var i=0;i<albaranes.length;i++){if(albaranes[i].servicioId===s.id && albaranes[i].tipo==='recogida' && albaranes[i].fecha){return albaranes[i].fecha;}}if(s.fechaRecogida){var p=String(s.fechaRecogida).split('-');if(p.length===3) return new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10)).getTime();}return null;}
+function renderInformeClientes(){var s=document.getElementById('infCliente');if(!s)return;var cur=s.value;var q=norm(infFiltroCliente);var list=clientes.slice();if(q){list=list.filter(function(c){var hay=norm(c.nombre||'')+' '+norm(c.nombreComercial||'');return hay.indexOf(q)!==-1;});}s.innerHTML='<option value="todos">Todos los clientes</option>'+list.map(function(c){return '<option value="'+c.id+'">'+esc(c.nombreComercial||c.nombre||'')+'</option>';}).join('');if(cur&&list.some(function(c){return c.id===cur;}))s.value=cur;if(!s.value)s.value='todos';}
+function filtrarInfCliente(v){infFiltroCliente=(v||'').trim();renderInformeClientes();}
+function filtrarServiciosInforme(){var cid=document.getElementById('infCliente').value;var desde=document.getElementById('infDesde').value;var hasta=document.getElementById('infHasta').value;var list=servicios.slice();if(cid&&cid!=='todos'){list=list.filter(function(s){return s.clienteId===cid;});}if(desde){var dms=new Date(desde+'T00:00:00').getTime();list=list.filter(function(s){return (s.createdAtLocal||0)>=dms;});}if(hasta){var hms=new Date(hasta+'T23:59:59').getTime();list=list.filter(function(s){return (s.createdAtLocal||0)<=hms;});}list.sort(function(a,b){return(b.createdAtLocal||0)-(a.createdAtLocal||0);});return list;}
+function verInforme(){var box=document.getElementById('informeResultados');if(!box)return;var list=filtrarServiciosInforme();if(!list.length){box.innerHTML='<div class="empty">No hay servicios en ese filtro.</div>';return;}box.innerHTML='<div class="otime" style="margin-bottom:8px;">'+list.length+' servicio(s)</div>'+list.map(function(s){var c=clientById(s.clienteId)||{};var nombre=c.nombreComercial||c.nombre||s.clienteNombre||'—';var infoS=(s.kg?'⚖️ '+s.kg+' kg':'')+(s.total?' · '+fp(s.total):'')+(s.facturaId?' · 🧾 '+esc(s.facturaId):'');return '<div class="order '+stClass(s.estado)+'" style="margin-bottom:8px;"><div class="ohead"><span class="cliente-tag">🏨 '+esc(nombre)+'</span><span class="otime">'+(s.createdAtLocal?fdt(s.createdAtLocal):'')+'</span></div><div class="oitems">'+escL(s.nota||'')+'</div>'+(infoS?'<div class="otime" style="margin-top:4px;">'+infoS+'</div>':'')+'<div class="ofoot" style="margin-top:6px;"><span class="st '+stClass(s.estado)+'">'+stLabel(s.estado)+'</span></div></div>';}).join('');}
+function buildServiciosRows(list){return list.map(function(s){var c=clientById(s.clienteId)||{};var fechaServ=s.createdAtLocal?new Date(s.createdAtLocal).toLocaleDateString('es-ES'):'';var tsRec=s.tsRecogido;if(!tsRec){for(var i=0;i<albaranes.length;i++){if(albaranes[i].servicioId===s.id && albaranes[i].tipo==='recogida' && albaranes[i].fecha){tsRec=albaranes[i].fecha;break;}}}if(!tsRec&&s.fechaRecogida){var p=String(s.fechaRecogida).split('-');if(p.length===3)tsRec=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10)).getTime();}var fechaRec=tsRec?new Date(tsRec).toLocaleDateString('es-ES'):'';var fechaPes=s.tsPesado?new Date(s.tsPesado).toLocaleDateString('es-ES'):'';var fechaEnt=s.tsEntregado?new Date(s.tsEntregado).toLocaleDateString('es-ES'):'';var factMensual=(s.tsPesado&&s.clienteId)?(facturaMensualDe(s.clienteId,ymOf(s.tsPesado))||'—'):'—';var prendasTxt=(s.prendas&&s.prendas.length)?s.prendas.map(function(p){return p.qty+'×'+p.tipo;}).join(', '):(s.materialEspecial||'');var total=Number(s.total)||0;var basePeso=total-(Number(s.importeMaterial)||0);return{'Cliente':c.nombre||s.clienteNombre||'','Nombre comercial':c.nombreComercial||'','NIF':c.nif||'','Contacto':c.contacto||'','Teléfono':c.telefono||'','Email':c.email||'','Dirección':c.direccion||'','Estado':stLabelPlain(s.estado),'Fecha servicio':fechaServ,'Fecha recogida':fechaRec,'Fecha pesaje':fechaPes,'Fecha entrega':fechaEnt,'Kg':s.kg||0,'Precio/kg':s.precioKilo||0,'Base peso (€)':round2(basePeso),'Prendas':prendasTxt,'Material (€)':Number(s.importeMaterial)||0,'Notas':s.nota||'','Diferencia kg':(s.diferenciaKg!=null?s.diferenciaKg:''),'Total base (€)':round2(total),'IGIC (7%)':round2(igicOf(total)),'Total con IGIC (€)':round2(totalConIGIC(total)),'Nº Factura (servicio)':s.facturaId||'—','Factura mensual':factMensual};});}
+function exportarInforme(){if(typeof XLSX==='undefined'){showToast('❌ Excel no cargado','error');return;}var list=filtrarServiciosInforme();if(!list.length){showToast('⚠️ No hay servicios en ese filtro','error');return;}var data=buildServiciosRows(list);var ws=XLSX.utils.json_to_sheet(data);var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Informe');XLSX.writeFile(wb,'informe_servicios_'+new Date().toISOString().slice(0,10)+'.xlsx');showToast('✅ Excel exportado','success');}
+function exportarExcel(){if(typeof XLSX==='undefined'){showToast(' Excel no cargado','error');return;}var list=servicios.slice().sort(function(a,b){return(b.createdAtLocal||0)-(a.createdAtLocal||0);});if(!list.length){showToast('⚠️ Sin servicios','error');return;}var data=buildServiciosRows(list);var ws=XLSX.utils.json_to_sheet(data);var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Servicios');XLSX.writeFile(wb,'servicios_'+new Date().toISOString().slice(0,10)+'.xlsx');showToast('✅ Excel exportado','success');}
+function renderPedidosClienteSelect(){var s=document.getElementById('pcCliente');if(!s)return;var q=norm(pcFiltroTexto);var list=clientes.slice();if(q){list=list.filter(function(c){var hay=norm(c.nombre||'')+' '+norm(c.nombreComercial||'');return hay.indexOf(q)!==-1;});}var cur=s.value;if(q){if(!list.length){s.innerHTML='<option value="">— Sin coincidencias —</option>';renderPeriodosCliente();return;}s.innerHTML=list.map(function(c){return '<option value="'+c.id+'">'+esc(c.nombreComercial||c.nombre||'')+'</option>';}).join('');if(cur&&list.some(function(c){return c.id===cur;}))s.value=cur;else s.value=list[0].id;}else{s.innerHTML='<option value="todos">Todos los clientes</option>'+list.map(function(c){return '<option value="'+c.id+'">'+esc(c.nombreComercial||c.nombre||'')+'</option>';}).join('');if(cur)s.value=cur;if(!s.value)s.value='todos';}renderPeriodosCliente();}
+function filtrarPcCliente(v){pcFiltroTexto=(v||'').trim();renderPedidosClienteSelect();}
+function renderPeriodosCliente(){var sel=document.getElementById('pcPeriodo');if(!sel)return;var cid=document.getElementById('pcCliente').value;var cur=sel.value;var set={};servicios.forEach(function(s){if(cid!=='todos'&&s.clienteId!==cid)return;if(s.createdAtLocal){set[ymOf(s.createdAtLocal)]=1;}});var months=Object.keys(set).sort().reverse();sel.innerHTML='<option value="todos">Todos los periodos</option>'+months.map(function(m){return '<option value="'+m+'">'+monthLabel(m)+'</option>';}).join('');if(cur&&months.indexOf(cur)!==-1)sel.value=cur;else sel.value='todos';}
+function filtrarPedidosCliente(){var cid=document.getElementById('pcCliente').value;var per=document.getElementById('pcPeriodo').value;var list=servicios.slice();if(cid!=='todos'){list=list.filter(function(s){return s.clienteId===cid;});}if(per!=='todos'){list=list.filter(function(s){return s.createdAtLocal&&ymOf(s.createdAtLocal)===per;});}list.sort(function(a,b){return(b.createdAtLocal||0)-(a.createdAtLocal||0);});return list;}
+function verPedidosCliente(){var box=document.getElementById('pedidosClienteResultados');if(!box)return;var list=filtrarPedidosCliente();if(!list.length){box.innerHTML='<div class="empty">No hay pedidos en ese filtro.</div>';return;}box.innerHTML='<div class="otime" style="margin-bottom:8px;">'+list.length+' pedido(s)</div>'+list.map(function(s){var c=clientById(s.clienteId)||{};var nombre=c.nombreComercial||c.nombre||s.clienteNombre||'—';var infoS=(s.kg?'⚖️ '+s.kg+' kg':'')+(s.importeMaterial?' · 🧵 +'+fp(s.importeMaterial):'')+(s.total?' · '+fp(s.total):'')+(s.facturaId?' · 🧾 '+esc(s.facturaId):'');var prendasTxt=(s.prendas&&s.prendas.length)?('<div class="otime" style="margin-top:4px;">🧵 '+esc(s.prendas.map(function(p){return p.qty+'×'+p.tipo;}).join(', '))+'</div>'):'';var weighed=['PESADO','ENTREGADO'].indexOf(s.estado)!==-1;var extra='';if(['RECOGIDO','PESADO','ENTREGADO'].indexOf(s.estado)!==-1){extra='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">'+(esAdminOGerencia()?'<button class="btn btn-grey btn-sm" onclick="retrocederEstado(\''+s.id+'\')">↩️ Anterior</button>':'')+(weighed?'<button class="btn btn-grey btn-sm" onclick="abrirPesarModal(\''+s.id+'\',true)">✏️ Editar</button>':'')+(esAdminOGerencia()&&weighed?'<button class="btn btn-grey btn-sm" onclick="abrirTsModal(\''+s.id+'\')">🕒 Fechas</button>':'')+(esAdminOGerencia()&&weighed?'<button class="btn btn-red btn-sm" onclick="borrarServicio(\''+s.id+'\')">🗑️ Borrar</button>':'')+'</div>';}return '<div class="order '+stClass(s.estado)+'" style="margin-bottom:8px;"><div class="ohead"><span class="cliente-tag">🏨 '+esc(nombre)+'</span><span class="otime">'+(s.createdAtLocal?fdt(s.createdAtLocal):'')+'</span></div><div class="oitems">'+escL(s.nota||'')+'</div>'+lineaRecogida(s)+diferenciaLine(s)+(infoS?'<div class="otime" style="margin-top:4px;">'+infoS+'</div>':'')+prendasTxt+extra+'<div class="ofoot" style="margin-top:6px;"><span class="st '+stClass(s.estado)+'">'+stLabel(s.estado)+'</span><div style="display:flex;gap:6px;flex-wrap:wrap;">'+botonesPara(s)+'</div></div></div>';}).join('');}
+function exportarPedidosCliente(){if(typeof XLSX==='undefined'){showToast('❌ Excel no cargado','error');return;}var list=filtrarPedidosCliente();if(!list.length){showToast('⚠️ No hay pedidos en ese filtro','error');return;}var data=buildServiciosRows(list);var ws=XLSX.utils.json_to_sheet(data);var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Pedidos');XLSX.writeFile(wb,'pedidos_cliente_'+new Date().toISOString().slice(0,10)+'.xlsx');showToast('✅ Excel exportado','success');}
+function fechaRecogidaInfo(servicioId){var s=servicioPorId(servicioId);if(s&&s.tsRecogido){return {texto:fdt(s.tsRecogido)};}var albRec=null;for(var i=0;i<albaranes.length;i++){if(albaranes[i].servicioId===servicioId&&albaranes[i].tipo==='recogida'){albRec=albaranes[i];break;}}if(albRec&&albRec.fecha){return {texto:fdt(albRec.fecha)};}if(s&&s.fechaRecogida){return {texto:fmtFecha(s.fechaRecogida)+' (programada)'};}return null;}
+function preguntarAlbaran(sid,tipo){if(confirm('¿Generar albarán de '+tipo+' con firma del cliente?')){abrirAlbaranModal(sid,tipo);}}
+function populateAlbPrendaSelect(){var s=document.getElementById('albPrenda');if(!s)return;s.innerHTML=PRENDAS.map(function(p){return '<option value="'+esc(p)+'">'+esc(p)+'</option>';}).join('');}
+function albPrendasPrecios(){if(!albCtx)return null;var s=servicioPorId(albCtx.servicioId);if(!s)return null;var c=clientById(s.clienteId);return (c&&c.preciosPrendas)||null;}
+function albAddPrenda(){if(!albCtx)return;var tipo=document.getElementById('albPrenda').value;var qty=parseInt(document.getElementById('albPrendaQty').value)||0;if(qty<=0){showToast('⚠️ Cantidad no válida','error');return;}var pp=albPrendasPrecios();var precio=pp?pp[tipo]:null;if(precio==null){showToast('⚠️ El cliente no tiene precio para "'+tipo+'". Ponlo en su ficha.','error');return;}albPrendas.push({tipo:tipo,qty:qty,precio:precio,total:Math.round(qty*precio*100)/100});renderAlbPrendas();}
+function albRemovePrenda(i){albPrendas.splice(i,1);renderAlbPrendas();}
+function renderAlbPrendas(){var b=document.getElementById('albPrendasList');if(!b)return;if(!albPrendas.length){b.innerHTML='<div class="otime">Sin materiales.</div>';return;}b.innerHTML=albPrendas.map(function(p,i){return '<div class="prenda-line"><span>'+esc(p.tipo)+' ×'+p.qty+' @ '+fp(p.precio)+'</span><span><b>'+fp(p.total)+'</b> <button class="btn btn-red btn-sm" onclick="albRemovePrenda('+i+')"></button></span></div>';}).join('');}
+function abrirAlbaranModal(sid,tipo){var s=servicioPorId(sid);if(!s)return;var c=clientById(s.clienteId)||{};albCtx={servicioId:sid,tipo:tipo};document.getElementById('albTitle').textContent=tipo==='recogida'?'📄 Albarán de recogida':'📄 Albarán de entrega';var kg=tipo==='recogida'?((s.pesoCliente!=null)?s.pesoCliente:(s.kg||0)):(s.kg||0);var frLine='';if(tipo==='entrega'){var fr=fechaRecogidaInfo(sid);if(fr){frLine='<div><b>📅 Fecha de recogida:</b> '+esc(fr.texto)+'</div>';}}var html='<div><b>Cliente:</b> '+esc(c.nombreComercial||c.nombre||s.clienteNombre||'')+'</div>'+(c.nif?'<div><b>NIF/CIF:</b> '+esc(c.nif)+'</div>':'')+(c.contacto?'<div><b>Contacto:</b> '+esc(c.contacto)+'</div>':'')+(c.telefono?'<div><b>Teléfono:</b> '+esc(c.telefono)+'</div>':'')+(c.direccion?'<div><b>Dirección:</b> '+esc(c.direccion)+'</div>':'')+frLine+'<div><b>Kg:</b> '+kg+' kg</div>'+(tipo==='entrega'&&s.total?'<div><b>Total (IGIC incl.):</b> '+fp(s.total)+'</div>':'')+(s.nota?'<div><b>Nota del cliente:</b> '+esc(s.nota)+'</div>':'')+'<div><b>Fecha:</b> '+fdt(nowLocal())+'</div>';document.getElementById('albDatos').innerHTML=html;albPrendas=(s.prendas||[]).map(function(p){return{tipo:p.tipo,qty:p.qty,precio:p.precio,total:p.total};});populateAlbPrendaSelect();document.getElementById('albPrendaQty').value='1';renderAlbPrendas();limpiarFirma();document.getElementById('albaranModal').classList.remove('hidden');initFirmaCanvas();}
+function cerrarAlbaranModal(){albCtx=null;albPrendas=[];document.getElementById('albaranModal').classList.add('hidden');}
+function initFirmaCanvas(){var c=document.getElementById('albFirma');if(!c)return;var ctx=c.getContext('2d');ctx.lineWidth=2;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#000';var drawing=false;function pos(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*(c.width/r.width),y:(e.clientY-r.top)*(c.height/r.height)};}c.onpointerdown=function(e){drawing=true;try{c.setPointerCapture(e.pointerId);}catch(err){}var p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);e.preventDefault();};c.onpointermove=function(e){if(!drawing)return;var p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();e.preventDefault();};c.onpointerup=function(){drawing=false;};c.onpointercancel=function(){drawing=false;};}
+function limpiarFirma(){var c=document.getElementById('albFirma');if(!c)return;var ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);}
+function guardarAlbaran(){if(!requireFB()||!albCtx)return;var c=document.getElementById('albFirma');var firma=c?c.toDataURL('image/png'):'';var s=servicioPorId(albCtx.servicioId);if(!s)return;var cl=clientById(s.clienteId)||{};var kg=albCtx.tipo==='recogida'?((s.pesoCliente!=null)?s.pesoCliente:(s.kg||0)):(s.kg||0);var now=nowLocal();var prendas=albPrendas.slice();var matTotal=0;prendas.forEach(function(p){matTotal+=p.total;});matTotal=Math.round(matTotal*100)/100;var tipoCtx=albCtx.tipo;var rec={tipo:tipoCtx,servicioId:s.id,clienteId:s.clienteId,clienteNombre:cl.nombre||s.clienteNombre||'',clienteNombreComercial:cl.nombreComercial||'',clienteNif:cl.nif||'',clienteContacto:cl.contacto||'',clienteTelefono:cl.telefono||'',clienteDireccion:cl.direccion||'',kg:kg,total:(tipoCtx==='entrega'?(Number(s.total)||0):0),nota:s.nota||'',notaMaterial:s.notaMaterial||'',prendas:prendas,importeMaterial:matTotal,fecha:now,firma:firma,emitidoPor:role};db.ref('albaranes').push(rec).then(function(){if(tipoCtx==='recogida'){db.ref('servicios/'+s.id).update({prendas:prendas,importeMaterial:matTotal,materialEspecial:prendas.map(function(p){return p.qty+'×'+p.tipo;}).join(', ')});}cerrarAlbaranModal();showToast('✅ Albarán guardado','success');}).catch(function(e){showToast('❌ Error: '+e.message,'error');});}
+function descargarAlbaranPDF(id){if(typeof window.jspdf==='undefined'||!window.jspdf.jsPDF){showToast('❌ Librería PDF no cargada','error');return;}var a=albaranPorId(id);if(!a){showToast('⚠️ Albarán no encontrado','error');return;}var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF();doc.setFontSize(14);doc.text(empresa.nombre||'Tu Lavandería',14,16);doc.setFontSize(9);doc.text(TAGLINE,14,22);doc.text('NIF: '+(empresa.nif||''),14,27);doc.text(empresa.direccion||'',14,32);doc.setFontSize(13);doc.text(a.tipo==='recogida'?'ALBARÁN DE RECOGIDA':'ALBARÁN DE ENTREGA',14,42);doc.setFontSize(10);doc.text('Fecha: '+fdt(a.fecha),14,50);doc.text('Cliente: '+(a.clienteNombreComercial||a.clienteNombre||''),14,58);var y=64;if(a.tipo==='entrega'){var fr=fechaRecogidaInfo(a.servicioId);if(fr){doc.text('Recogido el: '+fr.texto,14,y);y+=6;}}if(a.clienteNif){doc.text('NIF/CIF: '+a.clienteNif,14,y);y+=6;}if(a.clienteContacto){doc.text('Contacto: '+a.clienteContacto,14,y);y+=6;}if(a.clienteTelefono){doc.text('Teléfono: '+a.clienteTelefono,14,y);y+=6;}if(a.clienteDireccion){doc.text('Dirección: '+a.clienteDireccion,14,y);y+=6;}doc.text('Kilos: '+(a.kg||0)+' kg',14,y);y+=6;if(a.tipo==='entrega'&&a.total){doc.text('Total (IGIC incl.): '+Number(a.total).toFixed(2)+' €',14,y);y+=6;}if(a.prendas&&a.prendas.length){doc.text('Materiales:',14,y);y+=5;a.prendas.forEach(function(p){doc.text('   '+p.qty+' x '+p.tipo+'  = '+Number(p.total).toFixed(2)+' €',14,y);y+=5;});y+=1;}if(a.nota){doc.text('Nota cliente: '+String(a.nota).slice(0,140),14,y);y+=6;}if(a.notaMaterial){doc.text('Nota interna: '+String(a.notaMaterial).slice(0,140),14,y);y+=6;}y+=4;doc.text('Firma del cliente:',14,y);y+=4;if(a.firma){try{doc.addImage(a.firma,'PNG',14,y,88,36);}catch(e){}y+=42;}doc.setFontSize(8);doc.text('Documento generado por '+(empresa.nombre||'Tu Lavandería')+' · '+TAGLINE,14,y+2);doc.save('Albaran_'+a.tipo+'_'+(a.fecha||'')+'.pdf');showToast('✅ Albarán descargado','success');}
+function renderClientAlbaranes(){var b=document.getElementById('clientAlbaranesList');if(!b)return;var list=albaranes.filter(function(a){return a.clienteId===clienteIdFijo;}).sort(function(x,y){return(y.fecha||0)-(x.fecha||0);});if(!list.length){b.innerHTML='<div class="empty">Aún no hay albaranes.</div>';return;}b.innerHTML=list.map(function(a){var mats=(a.prendas&&a.prendas.length)?('<div class="otime">🧵 '+esc(a.prendas.map(function(p){return p.qty+'×'+p.tipo;}).join(', '))+'</div>'):'';var notas=[];if(a.nota)notas.push('Cliente: '+a.nota);if(a.notaMaterial)notas.push('Interna: '+a.notaMaterial);var frTxt='';if(a.tipo==='entrega'){var fr=fechaRecogidaInfo(a.servicioId);if(fr){frTxt=' · 📅 Recogida: '+fr.texto;}}return '<div class="alertrow" style="border-left-color:var(--green);flex-wrap:wrap;"><div style="flex:1;"><b>'+(a.tipo==='recogida'?'📥 Recogida':'📦 Entrega')+'</b><div class="otime">'+fdt(a.fecha)+' · '+(a.kg||0)+' kg'+frTxt+'</div>'+mats+(notas.length?'<div class="otime">📝 '+esc(notas.join(' | '))+'</div>':'')+'</div><button class="btn btn-grey btn-sm" onclick="descargarAlbaranPDF(\''+a.id+'\')"> PDF</button></div>';}).join('');}
+function renderAlbaranesAdmin(){var selC=document.getElementById('albCliente');var selP=document.getElementById('albPeriodo');var selT=document.getElementById('albTipo');var box=document.getElementById('albaranesList');if(!selC||!box)return;var curC=selC.value,curP=selP.value,curT=selT?selT.value:'todos';selC.innerHTML='<option value="todos">Todos los clientes</option>'+clientes.map(function(c){return '<option value="'+c.id+'">'+esc(c.nombreComercial||c.nombre||'')+'</option>';}).join('');if(curC)selC.value=curC;if(!selC.value)selC.value='todos';var months={};albaranes.forEach(function(a){if(a.fecha)months[ymOf(a.fecha)]=1;});var mList=Object.keys(months).sort().reverse();selP.innerHTML='<option value="todos">Todos los periodos</option>'+mList.map(function(m){return '<option value="'+m+'">'+monthLabel(m)+'</option>';}).join('');if(curP&&mList.indexOf(curP)!==-1)selP.value=curP;else selP.value='todos';if(selT)selT.value=curT||'todos';var cid=selC.value,per=selP.value,tip=selT?selT.value:'todos';var list=albaranes.filter(function(a){if(cid!=='todos'&&a.clienteId!==cid)return false;if(per!=='todos'&&ymOf(a.fecha)!==per)return false;if(tip!=='todos'&&a.tipo!==tip)return false;return true;}).sort(function(x,y){return(y.fecha||0)-(x.fecha||0);});if(!list.length){box.innerHTML='<div class="empty">No hay albaranes con ese filtro.</div>';return;}box.innerHTML=list.map(function(a){var mats=(a.prendas&&a.prendas.length)?('<div class="otime">🧵 '+esc(a.prendas.map(function(p){return p.qty+'×'+p.tipo;}).join(', '))+'</div>'):'';var notas=[];if(a.nota)notas.push('Cliente: '+a.nota);if(a.notaMaterial)notas.push('Interna: '+a.notaMaterial);var frTxt='';if(a.tipo==='entrega'){var fr=fechaRecogidaInfo(a.servicioId);if(fr){frTxt=' · 📅 Recogida: '+fr.texto;}}return '<div class="alertrow" style="border-left-color:var(--green);flex-wrap:wrap;"><div style="flex:1;"><b>'+(a.tipo==='recogida'?' Recogida':'📦 Entrega')+'</b> · '+esc(a.clienteNombreComercial||a.clienteNombre||'')+'<div class="otime">'+fdt(a.fecha)+' · '+(a.kg||0)+' kg'+(a.tipo==='entrega'&&a.total?' · '+fp(a.total):'')+frTxt+'</div>'+mats+(notas.length?'<div class="otime">📝 '+esc(notas.join(' | '))+'</div>':'')+(a.firma?'<div class="otime">✍️ Firmado</div>':'<div class="otime">Sin firma</div>')+'</div><div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-grey btn-sm" onclick="descargarAlbaranPDF(\''+a.id+'\')"> PDF</button><button class="btn btn-grey btn-sm" onclick="abrirAlbaranEdit(\''+a.id+'\')">✏️</button><button class="btn btn-red btn-sm" onclick="borrarAlbaran(\''+a.id+'\')">️</button></div></div>';}).join('');}
+function abrirAlbaranEdit(id){if(role!=='admin'){showToast('⚠️ Solo el admin puede editar albaranes','error');return;}var a=albaranPorId(id);if(!a)return;document.getElementById('albEditId').value=id;document.getElementById('albEditKg').value=a.kg||0;document.getElementById('albEditTotal').value=a.total||0;document.getElementById('albEditNota').value=a.nota||'';document.getElementById('albEditNotaMat').value=a.notaMaterial||'';albEditPrendas=(a.prendas||[]).map(function(p){return{tipo:p.tipo,qty:p.qty,precio:p.precio,total:p.total};});albEditQuitarFirmaFlag=false;updateAlbEditFirmaEstado(a);populateAlbEditPrendaSelect();renderAlbEditPrendas();document.getElementById('albaranEditModal').classList.remove('hidden');}
+function cerrarAlbaranEdit(){albEditPrendas=[];albEditQuitarFirmaFlag=false;document.getElementById('albaranEditModal').classList.add('hidden');}
+function populateAlbEditPrendaSelect(){var s=document.getElementById('albEditPrenda');if(!s)return;s.innerHTML=PRENDAS.map(function(p){return '<option value="'+esc(p)+'">'+esc(p)+'</option>';}).join('');}
+function albEditAddPrenda(){var tipo=document.getElementById('albEditPrenda').value;var qty=parseInt(document.getElementById('albEditPrendaQty').value)||0;if(qty<=0){showToast('⚠️ Cantidad no válida','error');return;}var id=document.getElementById('albEditId').value;var a=albaranPorId(id);var precio=null;if(a){var c=clientById(a.clienteId);var pp=c&&c.preciosPrendas;if(pp)precio=pp[tipo];}if(precio==null){showToast('⚠️ El cliente no tiene precio para "'+tipo+'"','error');return;}albEditPrendas.push({tipo:tipo,qty:qty,precio:precio,total:Math.round(qty*precio*100)/100});renderAlbEditPrendas();}
+function albEditRemovePrenda(i){albEditPrendas.splice(i,1);renderAlbEditPrendas();}
+function renderAlbEditPrendas(){var b=document.getElementById('albEditPrendasList');if(!b)return;if(!albEditPrendas.length){b.innerHTML='';return;}b.innerHTML=albEditPrendas.map(function(p,i){return '<div class="prenda-line"><span>'+esc(p.tipo)+' ×'+p.qty+' @ '+fp(p.precio)+'</span><span><b>'+fp(p.total)+'</b> <button class="btn btn-red btn-sm" onclick="albEditRemovePrenda('+i+')"></button></span></div>';}).join('');}
+function updateAlbEditFirmaEstado(a){var e=document.getElementById('albEditFirmaEstado');if(!e)return;e.textContent=(a&&a.firma)?(albEditQuitarFirmaFlag?'Se quitará al guardar':'✍️ Tiene firma'):'Sin firma';}
+function albEditQuitarFirma(){albEditQuitarFirmaFlag=!albEditQuitarFirmaFlag;var a=albaranPorId(document.getElementById('albEditId').value);updateAlbEditFirmaEstado(a);}
+function guardarAlbaranEdit(){if(!requireFB())return;if(role!=='admin'){showToast('⚠️ Solo el admin puede editar albaranes','error');return;}var id=document.getElementById('albEditId').value;var a=albaranPorId(id);if(!a)return;var mat=0;albEditPrendas.forEach(function(p){mat+=p.total;});mat=Math.round(mat*100)/100;var upd={kg:parseFloat(document.getElementById('albEditKg').value)||0,total:parseFloat(document.getElementById('albEditTotal').value)||0,nota:document.getElementById('albEditNota').value,notaMaterial:document.getElementById('albEditNotaMat').value,prendas:albEditPrendas.slice(),importeMaterial:mat};if(albEditQuitarFirmaFlag)upd.firma='';db.ref('albaranes/'+id).update(upd).then(function(){cerrarAlbaranEdit();showToast('✅ Albarán actualizado','success');}).catch(function(e){showToast('❌ Error: '+e.message,'error');});}
+function borrarAlbaran(id){if(role!=='admin'){showToast('⚠️ Solo el admin puede borrar albaranes','error');return;}if(!confirm('️ Se borrará este albarán. No afecta al servicio ni a la factura.\n¿Continuar?'))return;db.ref('albaranes/'+id).remove().then(function(){showToast('✅ Albarán borrado','success');}).catch(function(e){showToast('❌ Error: '+e.message,'error');});}
+function populatePrendaSelect(){var s=document.getElementById('pesarPrenda');if(!s)return;s.innerHTML=PRENDAS.map(function(p){return '<option value="'+esc(p)+'">'+esc(p)+'</option>';}).join('');}
+function servicioActual(){return servicioPorId(pesarServicioId);}
+function preciosPrendasCliente(){var s=servicioActual();if(!s)return null;var c=clientById(s.clienteId);return (c&&c.preciosPrendas)||null;}
+function addPrendaLine(){var tipo=document.getElementById('pesarPrenda').value;var qty=parseInt(document.getElementById('pesarPrendaQty').value)||0;if(qty<=0){showToast('⚠️ Nº de prendas no válido','error');return;}var pp=preciosPrendasCliente();var precio=pp?pp[tipo]:null;if(precio==null){showToast('⚠️ El cliente no tiene precio para "'+tipo+'". Ponlo en su ficha.','error');return;}pesarPrendas.push({tipo:tipo,qty:qty,precio:precio,total:Math.round(qty*precio*100)/100});renderPrendasList();updatePesarPreview();}
+function removePrendaLine(i){pesarPrendas.splice(i,1);renderPrendasList();updatePesarPreview();}
+function renderPrendasList(){var b=document.getElementById('pesarPrendasList');if(!b)return;if(!pesarPrendas.length){b.innerHTML='';return;}b.innerHTML=pesarPrendas.map(function(p,i){return '<div class="prenda-line"><span>'+esc(p.tipo)+' ×'+p.qty+' @ '+fp(p.precio)+'</span><span><b>'+fp(p.total)+'</b> <button class="btn btn-red btn-sm" onclick="removePrendaLine('+i+')">✕</button></span></div>';}).join('');}
+function prendasTotal(){var t=0;pesarPrendas.forEach(function(p){t+=p.total;});return Math.round(t*100)/100;}
+var pesarServicioId=null;var pesarPrendas=[];var pesarEditMode=false;
+function abrirPesarModal(id,edit){pesarServicioId=id;pesarEditMode=!!edit;var s=servicioActual();document.getElementById('pesarTitle').textContent=pesarEditMode?'✏️ Editar servicio pesado':'⚖️ Pesar servicio';var notaBox=document.getElementById('pesarNotaPedido');if(notaBox){if(s&&s.nota){notaBox.style.display='block';notaBox.textContent='📝 Nota del cliente: '+s.nota;}else{notaBox.style.display='none';notaBox.textContent='';}}if(s&&s.prendas&&s.prendas.length){pesarPrendas=s.prendas.map(function(p){return{tipo:p.tipo,qty:p.qty,precio:p.precio,total:p.total};});}else{pesarPrendas=[];}var prefillKg=(s&&s.kg)?s.kg:((s&&s.pesoCliente!=null)?s.pesoCliente:'');document.getElementById('pesarKg').value=prefillKg;document.getElementById('pesarNota').value=(s&&s.notaMaterial)||'';document.getElementById('pesarPrendaQty').value='1';populatePrendaSelect();renderPrendasList();document.getElementById('pesarModal').classList.remove('hidden');updatePesarPreview();}
+function cerrarPesarModal(){document.getElementById('pesarModal').classList.add('hidden');pesarServicioId=null;pesarPrendas=[];pesarEditMode=false;}
+function updatePesarPreview(){var el=document.getElementById('pesarPreview');if(!el||!pesarServicioId)return;var s=servicioActual();if(!s)return;var kg=parseFloat(document.getElementById('pesarKg').value)||0;var pk=Number(s.precioKilo)||0;var base=kg*pk;var mat=prendasTotal();var tot=base+mat;el.textContent=kg+' kg × '+fp(pk)+' = '+fp(base)+(mat?' + prendas '+fp(mat):'')+'  →  TOTAL '+fp(tot);var pcEl=document.getElementById('pesarPesoCliente');var difEl=document.getElementById('pesarDif');if(pcEl)pcEl.textContent=(s.pesoCliente!=null? s.pesoCliente+' kg':'—');if(difEl){if(s.pesoCliente!=null&&kg>0){var d=Math.round((kg-s.pesoCliente)*100)/100;difEl.textContent='Diferencia: '+d.toFixed(2)+' kg';difEl.style.color=(d!==0?'var(--red)':'var(--green)');difEl.style.fontWeight='700';}else{difEl.textContent='Diferencia: —';difEl.style.color='var(--t2)';difEl.style.fontWeight='400';}}}
+function confirmarPesaje(){if(!requireFB()||!pesarServicioId)return;var kg=parseFloat(document.getElementById('pesarKg').value);var note=document.getElementById('pesarNota').value.trim();if(!kg||kg<=0){showToast('⚠️ Kilos no válidos','error');return;}var s=servicioActual();if(!s)return;var base=kg*(Number(s.precioKilo)||0);var mat=prendasTotal();var summary=pesarPrendas.map(function(p){return p.qty+'×'+p.tipo;}).join(', ');var matDesc=(summary?summary:'')+(note?(summary?' | ':'')+note:'');var dif=(s.pesoCliente!=null)?Math.round((kg-s.pesoCliente)*100)/100:null;var total=base+mat;var now=nowLocal();if(pesarEditMode){var upd={kg:kg,prendas:pesarPrendas,importeMaterial:mat,materialEspecial:matDesc,notaMaterial:note,diferenciaKg:dif,total:Math.round(total*100)/100,updatedAtLocal:now};db.ref('servicios/'+s.id).update(upd).then(function(){if(s.facturaId){var f=facturaPorNumero(s.facturaId);if(f){db.ref('facturas/'+f.id).update({kg:kg,precioKilo:s.precioKilo,base:Math.round(base*100)/100,prendas:pesarPrendas,materialImporte:mat,materialDesc:matDesc,total:Math.round(total*100)/100});}}cerrarPesarModal();showToast('✅ Servicio y factura actualizados','success');}).catch(function(e){showToast('❌ Error: '+e.message,'error');});return;}var periodoActual=ymOf(now);nextNumeroFactura('FM', periodoActual, function(num){var d=new Date(now);db.ref('facturas/'+newId()).set({numero:num,tipo:'FM',periodo:periodoActual,fecha:localISO(d),hora:pad2(d.getHours())+':'+pad2(d.getMinutes()),timestamp:now,clienteId:s.clienteId,clienteNombre:s.clienteNombre,kg:kg,precioKilo:s.precioKilo,base:Math.round(base*100)/100,prendas:pesarPrendas,materialImporte:mat,materialDesc:matDesc,notaMaterial:note,diferenciaKg:dif,total:Math.round(total*100)/100,servicioId:s.id}).then(function(){return db.ref('servicios/'+pesarServicioId).update({estado:'PESADO',kg:kg,prendas:pesarPrendas,importeMaterial:mat,materialEspecial:matDesc,notaMaterial:note,diferenciaKg:dif,total:Math.round(total*100)/100,tsPesado:now,updatedAtLocal:now,facturaId:num});}).then(function(){cerrarPesarModal();showToast('✅ '+num+': '+fp(total),'success');});});}
+function preciosPrendasPara(cid){var c=clientById(cid);return (c&&c.preciosPrendas)||null;}
+function populateRecPrendaSelect(){var s=document.getElementById('recPrenda');if(!s)return;s.innerHTML=PRENDAS.map(function(p){return '<option value="'+esc(p)+'">'+esc(p)+'</option>';}).join('');}
+function addRecPrenda(){var tipo=document.getElementById('recPrenda').value;var qty=parseInt(document.getElementById('recPrendaQty').value)||0;if(qty<=0){showToast('⚠️ Nº de prendas no válido','error');return;}var pp=preciosPrendasPara(recogidaClienteId||clienteIdFijo);var precio=pp?pp[tipo]:null;if(precio==null){showToast('️ El cliente no tiene precio para "'+tipo+'". Ponlo en su ficha.','error');return;}recPrendas.push({tipo:tipo,qty:qty,precio:precio,total:Math.round(qty*precio*100)/100});renderRecPrendasList();}
+function removeRecPrenda(i){recPrendas.splice(i,1);renderRecPrendasList();}
+function renderRecPrendasList(){var b=document.getElementById('recPrendasList');if(!b)return;if(!recPrendas.length){b.innerHTML='';return;}b.innerHTML=recPrendas.map(function(p,i){return '<div class="prenda-line"><span>'+esc(p.tipo)+' ×'+p.qty+' @ '+fp(p.precio)+'</span><span><b>'+fp(p.total)+'</b> <button class="btn btn-red btn-sm" onclick="removeRecPrenda('+i+')">✕</button></span></div>';}).join('');}
+function abrirRecogidaModal(clientId){recogidaClienteId=clientId||null;recPrendas=[];var d=new Date();document.getElementById('recFecha').value=localISO(d);document.getElementById('recDesde').value='';document.getElementById('recHasta').value='';document.getElementById('recPesoCliente').value='';document.getElementById('recNota').value='';populateRecPrendaSelect();renderRecPrendasList();document.getElementById('recPrendaQty').value='1';var t=document.getElementById('recTitle');if(t){var c=recogidaClienteId?clientById(recogidaClienteId):null;t.textContent='🧺 Solicitar recogida'+(c?' — '+(c.nombreComercial||c.nombre||''):'');}document.getElementById('recogidaModal').classList.remove('hidden');}
+function cerrarRecogidaModal(){recogidaClienteId=null;recPrendas=[];document.getElementById('recogidaModal').classList.add('hidden');}
+function confirmarRecogida(){if(!requireFB())return;var cid=recogidaClienteId||clienteIdFijo;var fecha=document.getElementById('recFecha').value;if(!fecha){showToast('️ Elige la fecha de recogida','error');return;}var desde=document.getElementById('recDesde').value;var hasta=document.getElementById('recHasta').value;var pc=parseFloat(document.getElementById('recPesoCliente').value);var pesoCliente=isNaN(pc)?null:pc;var nota=document.getElementById('recNota').value.trim();var c=clientById(cid);if(!c){showToast('⚠️ Cliente no detectado','error');return;}var creadoPor=recogidaClienteId?'admin':'cliente';var id=newId();var now=nowLocal();db.ref('servicios/'+id).set({clienteId:cid,clienteNombre:c.nombreComercial||c.nombre||'',nota:nota,estado:'SOLICITADO',kg:0,precioKilo:c.precioKilo||0,prendas:recPrendas.slice(),importeMaterial:0,materialEspecial:'',total:0,pesoCliente:pesoCliente,fechaRecogida:fecha,franjaDesde:desde,franjaHasta:hasta,creadoPor:creadoPor,tsSolicitado:now,createdAtLocal:now,updatedAtLocal:now}).then(function(){recogidaClienteId=null;recPrendas=[];cerrarRecogidaModal();showToast('✅ Solicitud enviada','success');});}
+function renderClientState(){var card=document.getElementById('clientStateCard');var l=clientServicios.slice().sort(function(a,b){return(b.createdAtLocal||0)-(a.createdAtLocal||0);})[0];if(!l){card.classList.add('hidden');return;}card.classList.remove('hidden');document.getElementById('clientStateValue').innerHTML='<span class="st '+stClass(l.estado)+'" style="font-size:18px;padding:8px 14px;">'+stLabel(l.estado)+'</span>';var extra='';if(l.pesoCliente!=null&&l.kg!=null){var dv=Math.round((l.kg-l.pesoCliente)*100)/100;extra=' · Dif. peso '+dv+' kg';}document.getElementById('clientStateItems').textContent=((l.nota||'').split('\n')[0])+extra;}
+function renderClientServicios(){var b=document.getElementById('clientServicios');if(!b)return;if(!clientServicios.length){b.innerHTML='<div class="empty">Aún no tienes servicios.</div>';return;}var s=clientServicios.slice().sort(function(a,b2){return(b2.createdAtLocal||0)-(a.createdAtLocal||0);});b.innerHTML=s.map(function(serv){return'<div class="order '+stClass(serv.estado)+'"><div class="oitems">'+escL(serv.nota||'')+'</div>'+lineaRecogida(serv)+diferenciaLine(serv)+'<div class="ofoot"><span class="st '+stClass(serv.estado)+'">'+stLabel(serv.estado)+'</span><span class="otime">'+ftime(serv.createdAtLocal)+'</span></div></div>';}).join('');}
+function renderTotal(){var base=0;clientServicios.forEach(function(s){if(['PESADO','ENTREGADO'].indexOf(s.estado)!==-1)base+=Number(s.total)||0;});var c=document.getElementById('totalCard'),v=document.getElementById('totalValue'),bd=document.getElementById('totalBreakdown');if(base>0){c.style.display='block';v.textContent=fp(totalConIGIC(base));if(bd)bd.textContent='Base '+fp(base)+' + IGIC 7% '+fp(igicOf(base));}else{c.style.display='none';if(bd)bd.textContent='';}}
+function renderClientFacturas(){var b=document.getElementById('clientFacturasList');if(!b)return;var set={};servicios.forEach(function(s){if(s.clienteId===clienteIdFijo&&['PESADO','ENTREGADO'].indexOf(s.estado)!==-1&&(Number(s.total)||0)>0){var ym=ymOf(s.tsPesado||s.createdAtLocal);if(!set[ym])set[ym]={n:0,kg:0,t:0};set[ym].n++;set[ym].kg+=Number(s.kg)||0;set[ym].t+=Number(s.total)||0;}});var months=Object.keys(set).sort().reverse();if(!months.length){b.innerHTML='<div class="empty">Aún no hay facturas.</div>';return;}b.innerHTML=months.map(function(m){var s=set[m];var p=m.split('-');var year=parseInt(p[0]);var month=parseInt(p[1]);var lastDay=new Date(year,month,0).getDate();var desde=m+'-01';var hasta=m+'-'+String(lastDay).padStart(2,'0');var periodoKey=desde.replace(/-/g,'')+'_'+hasta.replace(/-/g,'');return'<div class="alertrow" style="border-left-color:var(--purple)"><div><b>'+monthLabel(m)+'</b><div class="otime">'+s.n+' lavado(s) · '+s.kg.toFixed(1)+' kg · IGIC '+fp(igicOf(s.t))+'</div></div><div style="display:flex;align-items:center;gap:8px;"><b>'+fp(totalConIGIC(s.t))+'</b><button class="btn btn-grey btn-sm" onclick="generarPDFMensual(\''+clienteIdFijo+'\',\'FM\',\''+periodoKey+'\',\''+desde+'\',\''+hasta+'\')"> PDF</button></div></div>';}).join('');}
+
+// ==========================================
+// SUPERADMIN
+// ==========================================
+function superRenderEmpresas() {
+    db.ref('config/empresas').once('value').then(function(s) {
+        var data = s.val() || {};
+        var list = Object.keys(data).map(function(k) { return { id: k, nombre: data[k].nombre || k }; });
+        var box = document.getElementById('superEmpresasList');
+        if (box) {
+            if (!list.length) box.innerHTML = '<div class="empty">No hay empresas registradas. Crea la primera abajo.</div>';
+            else box.innerHTML = list.map(function(e) { return '<div class="alertrow" style="border-left-color:var(--green);"><div><b>' + esc(e.id) + '</b> · ' + esc(e.nombre) + '</div></div>'; }).join('');
+        }
+        var sel = document.getElementById('superNewEmpresa');
+        if (sel) sel.innerHTML = list.map(function(e) { return '<option value="' + esc(e.id) + '">' + esc(e.id) + ' - ' + esc(e.nombre) + '</option>'; }).join('');
+    });
+}
+function superCrearEmpresa() {
+    var id = document.getElementById('newEmpId').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    var nombre = document.getElementById('newEmpNombre').value.trim();
+    if (!id || !nombre) { showToast('⚠️ ID y Nombre obligatorios', 'error'); return; }
+    db.ref('config/empresas/' + id).set({ id: id, nombre: nombre, createdAt: Date.now() }).then(function() {
+        showToast('✅ Empresa creada: ' + id, 'success');
+        document.getElementById('newEmpId').value = '';
+        document.getElementById('newEmpNombre').value = '';
+        superRenderEmpresas();
+    }).catch(function(e){showToast('❌ Error: '+e.message,'error');});
+}
+function superRenderUsuarios() {
+    db.ref('config/usuarios').once('value').then(function(s) {
+        var data = s.val() || {};
+        var list = Object.keys(data).map(function(k) { return { user: k, rol: data[k].rol, empresaId: data[k].empresaId }; });
+        var box = document.getElementById('superUsuariosList');
+        if (box) {
+            if (!list.length) box.innerHTML = '<div class="empty">No hay usuarios.</div>';
+            else box.innerHTML = list.map(function(u) { return '<div class="alertrow" style="border-left-color:var(--blue);flex-wrap:wrap;"><div style="flex:1;"><b>' + esc(u.user) + '</b> <span class="otime">· Rol: ' + esc(u.rol) + ' · Empresa: ' + esc(u.empresaId || 'N/A') + '</span></div><div><button class="btn btn-red btn-sm" onclick="superBorrarUsuario(\'' + esc(u.user) + '\')">🗑️</button></div></div>'; }).join('');
+        }
+    });
+}
+function superCrearUsuario() {
+    var u = document.getElementById('superNewUser').value.trim().toLowerCase();
+    var p = document.getElementById('superNewPass').value;
+    var r = document.getElementById('superNewRol').value;
+    var e = document.getElementById('superNewEmpresa').value;
+    if (!u || !p) { showToast('⚠️ Usuario y contraseña obligatorios', 'error'); return; }
+    if (!/^[a-z0-9_]+$/.test(u)) { showToast('⚠️ Usuario: solo letras/números', 'error'); return; }
+    hashPassword(p).then(function(hash) {
+        db.ref('config/usuarios/' + u).set({ passwordHash: hash, rol: r, empresaId: e }).then(function() {
+            showToast('✅ Usuario creado', 'success');
+            document.getElementById('superNewUser').value = '';
+            document.getElementById('superNewPass').value = '';
+            superRenderUsuarios();
+        }).catch(function(e){showToast('❌ Error: '+e.message,'error');});
+    });
+}
+function superBorrarUsuario(u) {
+    if (!confirm('¿Borrar usuario "' + u + '"?')) return;
+    db.ref('config/usuarios/' + u).remove().then(function() {
+        showToast('✅ Usuario borrado', 'success');
+        superRenderUsuarios();
+    }).catch(function(e){showToast('❌ Error: '+e.message,'error');});
+}
+
+// ==========================================
+// SUBSCRIBE ALL
+// ==========================================
+function subscribeAll(){if(!firebaseReady||!db)return;db.ref('config/empresa').on('value',function(s){var v=s.val();if(v){empresa.nombre=v.nombre||empresa.nombre;empresa.nif=v.nif||empresa.nif;empresa.direccion=v.direccion||empresa.direccion;empresa.cuenta=v.cuenta||empresa.cuenta;}applyBrand();if(esAdminOGerencia()||esSuperAdmin())renderEmpresa();});if(role==='admin'||esSuperAdmin()){db.ref('config/usuarios').on('value',function(s){renderUsuariosList(s.val());});}db.ref('albaranes').on('value',function(s){var d=s.val()||{};albaranes=Object.keys(d).map(function(k){var o=d[k];o.id=k;return o;});if(role==='cliente')renderClientAlbaranes();if(isStaff())renderStaffServicios();if(role==='admin')renderAlbaranesAdmin();});db.ref('clientes').on('value',function(s){var d=s.val()||{};clientes=Object.keys(d).map(function(k){var o=d[k];o.id=k;return o;});clientes.sort(function(a,b){return String(a.nombre||'').localeCompare(String(b.nombre||''));});if(esAdminOGerencia()||esSuperAdmin()){renderClientes();renderResumen();renderQuickClientes();}if(isStaff())renderServCliList();if(role==='cliente')resolveClient();});db.ref('servicios').on('value',function(s){var d=s.val()||{};servicios=Object.keys(d).map(function(k){var o=d[k];o.id=k;return o;});clientServicios=servicios.filter(function(o){return o.clienteId===clienteIdFijo;});if(esAdminOGerencia()||esSuperAdmin())renderResumen();renderAll();});db.ref('facturas').on('value',function(s){var d=s.val()||{};facturas=Object.keys(d).map(function(k){var o=d[k];o.id=k;return o;});facturas.sort(function(a,b){return(b.timestamp||0)-(a.timestamp||0);});if(role==='admin'){renderContab();renderFacturas();renderResumen();}});listenProbe();}
+setInterval(function(){if(isStaff())renderStaffServicios();},30000);
+function boot(){applyBrand();applyRole();if(initFirebase()){subscribeAll();}}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',boot);}else{boot();}
+</script>
+</body>
+</html>
